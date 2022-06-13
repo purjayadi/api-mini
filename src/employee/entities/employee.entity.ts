@@ -1,5 +1,6 @@
-import { BaseColumn } from "src/constant/base.entity";
-import { Column, PrimaryGeneratedColumn } from "typeorm";
+import { Customer } from './../../customer/entities/customer.entity';
+import { BaseColumn } from "../../utils/base.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 export enum GenderFormat {
     MALE = 'male',
@@ -11,6 +12,7 @@ export enum StatusFormat {
     SINGLE = 'single'
 }
 
+@Entity()
 export class Employee extends BaseColumn {
     @PrimaryGeneratedColumn('uuid')
     id: string
@@ -25,6 +27,16 @@ export class Employee extends BaseColumn {
     phone: string
 
     @Column({
+        nullable: true,
+    })
+    email: string
+
+    @Column({
+        type: 'text'
+    })
+    address: string
+
+    @Column({
         type: 'enum',
         enum: GenderFormat,
         default: GenderFormat.MALE
@@ -32,7 +44,7 @@ export class Employee extends BaseColumn {
     gender: GenderFormat
 
     @Column({
-        default: () => 'employee.jpg'
+        default: 'employee.jpg'
     })
     photo: string
 
@@ -46,7 +58,12 @@ export class Employee extends BaseColumn {
     })
     status: StatusFormat
 
-    @Column()
+    @Column({
+        default: 1
+    })
     isActive: boolean
+
+    @OneToMany(() => Customer, (c) => c.employee)
+    customers: Customer[]
 
 }
