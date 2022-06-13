@@ -1,34 +1,39 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { IPagination } from './../utils/interfaces/request.interface';
+import { IResponse } from './../utils/interfaces/response.interface';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query, Req, Logger } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import { FindEmployeeDto } from './dto/find-employee.dto';
 
 @Controller('employee')
 export class EmployeeController {
-  constructor(private readonly employeeService: EmployeeService) {}
-
-  @Post()
-  create(@Body() createEmployeeDto: CreateEmployeeDto) {
-    return this.employeeService.create(createEmployeeDto);
-  }
+  constructor(private readonly service: EmployeeService) { }
 
   @Get()
-  findAll() {
-    return this.employeeService.findAll();
+  findAll(@Query() payload: FindEmployeeDto): Promise<IResponse> {
+    return this.service.findAll(payload);
   }
+
+
+  @Post()
+  create(@Body() payload: CreateEmployeeDto) {
+    return this.service.create(payload);
+  }
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.employeeService.findOne(+id);
+    return this.service.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateEmployeeDto: UpdateEmployeeDto) {
-    return this.employeeService.update(+id, updateEmployeeDto);
+    return this.service.update(id, updateEmployeeDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.employeeService.remove(+id);
+    return this.service.remove(id);
   }
 }

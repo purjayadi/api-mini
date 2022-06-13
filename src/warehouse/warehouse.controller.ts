@@ -1,34 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { FindDto } from './../utils/dto/find.dto';
 import { WarehouseService } from './warehouse.service';
+import { IResponse } from '../utils/interfaces/response.interface';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { UpdateWarehouseDto } from './dto/update-warehouse.dto';
 
 @Controller('warehouse')
 export class WarehouseController {
-  constructor(private readonly warehouseService: WarehouseService) {}
+  constructor(private readonly service: WarehouseService) { }
 
   @Post()
-  create(@Body() createWarehouseDto: CreateWarehouseDto) {
-    return this.warehouseService.create(createWarehouseDto);
+  create(@Body() payload: CreateWarehouseDto) {
+    return this.service.create(payload);
   }
 
   @Get()
-  findAll() {
-    return this.warehouseService.findAll();
+  findAll(@Query() payload: FindDto): Promise<IResponse> {
+    return this.service.findAll(payload);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.warehouseService.findOne(+id);
+    return this.service.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWarehouseDto: UpdateWarehouseDto) {
-    return this.warehouseService.update(+id, updateWarehouseDto);
+  update(@Param('id') id: string, @Body() payload: UpdateWarehouseDto) {
+    return this.service.update(id, payload);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.warehouseService.remove(+id);
+    return this.service.remove(id);
   }
 }
