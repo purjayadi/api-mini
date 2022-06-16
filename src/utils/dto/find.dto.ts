@@ -1,14 +1,13 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString } from 'class-validator';
 
 export class FindDto {
-    @IsOptional()
-    public readonly limit: number;
+  @IsOptional()
+  public readonly limit: number;
 
-    @IsOptional()
-    public readonly offset: number;
+  @IsOptional()
+  public readonly offset: number;
 
-    @IsString()
-    @IsOptional()
-    public readonly query: string;
-
+  @IsString()
+  @IsOptional()
+  public readonly query: string;
 }

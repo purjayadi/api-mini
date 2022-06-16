@@ -4,6 +4,6 @@ import { ReturController } from './retur.controller';
 
 @Module({
   controllers: [ReturController],
-  providers: [ReturService]
+  providers: [ReturService],
 })
 export class ReturModule {}

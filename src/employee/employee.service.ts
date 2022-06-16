@@ -11,21 +11,23 @@ export class EmployeeService {
   constructor(
     @Inject('EmployeeRepositoryInterface')
     private readonly repository: EmployeeRepositoryInterface,
-
-  ) { }
-
+  ) {}
 
   async findAll(payload: FindEmployeeDto): Promise<IResponse> {
     try {
       const { offset, limit } = payload;
       const employees = await this.repository.findWithRelations({
-        ...limit && { take: limit },
-        ...offset && { skip: offset }
+        ...(limit && { take: limit }),
+        ...(offset && { skip: offset }),
       });
 
       return { data: employees, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return { message: "Unable to get employee", error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+      return {
+        message: 'Unable to get employee',
+        error: error.message,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
     }
   }
 
@@ -38,9 +40,17 @@ export class EmployeeService {
         ...payload,
         code: code,
       });
-      return { message: "Create employee successfully", error: null, status: HttpStatus.OK };
+      return {
+        message: 'Create employee successfully',
+        error: null,
+        status: HttpStatus.OK,
+      };
     } catch (error) {
-      return { message: "Unable to create employee", error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+      return {
+        message: 'Unable to create employee',
+        error: error.message,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
     }
   }
 
@@ -48,11 +58,19 @@ export class EmployeeService {
     try {
       const employee = await this.repository.findOneById(id);
       if (!employee) {
-        return { message: "Employee not Found", error: null, status: HttpStatus.NOT_FOUND };
+        return {
+          message: 'Employee not Found',
+          error: null,
+          status: HttpStatus.NOT_FOUND,
+        };
       }
       return { data: employee, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return { message: "Unable to get employee", error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+      return {
+        message: 'Unable to get employee',
+        error: error.message,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
     }
   }
 
@@ -60,12 +78,24 @@ export class EmployeeService {
     try {
       const plan = await this.repository.findOneById(id);
       if (!plan) {
-        return { data: null, error: ['Employee not Found'], status: HttpStatus.NOT_FOUND };
+        return {
+          data: null,
+          error: ['Employee not Found'],
+          status: HttpStatus.NOT_FOUND,
+        };
       }
       await this.repository.update(id, payload);
-      return { message: "Update employee successfully", error: null, status: HttpStatus.OK };
+      return {
+        message: 'Update employee successfully',
+        error: null,
+        status: HttpStatus.OK,
+      };
     } catch (error) {
-      return { message: "Unable to update employee", error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+      return {
+        message: 'Unable to update employee',
+        error: error.message,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
     }
   }
 
@@ -73,13 +103,24 @@ export class EmployeeService {
     try {
       const plan = await this.repository.findOneById(id);
       if (!plan) {
-        return { data: null, error: ['Employee not Found'], status: HttpStatus.NOT_FOUND };
+        return {
+          data: null,
+          error: ['Employee not Found'],
+          status: HttpStatus.NOT_FOUND,
+        };
       }
       await this.repository.remove(id);
-      return { message: "Delete employee successfully", error: null, status: HttpStatus.OK };
+      return {
+        message: 'Delete employee successfully',
+        error: null,
+        status: HttpStatus.OK,
+      };
     } catch (error) {
-      return { message: "Unable to delete employee", error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+      return {
+        message: 'Unable to delete employee',
+        error: error.message,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
     }
   }
-
 }

@@ -1,19 +1,23 @@
-import { BaseEntity, CreateDateColumn, DeleteDateColumn, UpdateDateColumn, VersionColumn } from "typeorm";
+import {
+  BaseEntity,
+  CreateDateColumn,
+  DeleteDateColumn,
+  UpdateDateColumn,
+  VersionColumn,
+} from 'typeorm';
 
 export abstract class BaseColumn extends BaseEntity {
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date | null;
 
-    @UpdateDateColumn()
-    updatedAt: Date | null;
+  @DeleteDateColumn()
+  deletedAt: Date | null;
 
-    @DeleteDateColumn()
-    deletedAt: Date | null
-
-    @VersionColumn({
-        default: 1,
-    })
-    version: number;
-
+  @VersionColumn({
+    default: 1,
+  })
+  version: number;
 }

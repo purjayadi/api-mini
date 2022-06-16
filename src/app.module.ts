@@ -25,7 +25,22 @@ import { PermissionModule } from './user/permission/permission.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    CustomerModule, ProductModule, EmployeeModule, OrderModule, ScheduleModule, SupplierModule, WarehouseModule, StockModule, ReturModule, PurchaseModule, AccountingModule, AddressModule, UserModule, AuthModule, RoleModule, PermissionModule,
+    CustomerModule,
+    ProductModule,
+    EmployeeModule,
+    OrderModule,
+    ScheduleModule,
+    SupplierModule,
+    WarehouseModule,
+    StockModule,
+    ReturModule,
+    PurchaseModule,
+    AccountingModule,
+    AddressModule,
+    UserModule,
+    AuthModule,
+    RoleModule,
+    PermissionModule,
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as any,
       host: process.env.DB_HOST,
@@ -33,16 +48,12 @@ import { PermissionModule } from './user/permission/permission.module';
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
-      entities: [
-        __dirname + '/**/*.entity{.ts,.js}',
-      ],
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       logging: true,
       synchronize: true, // never true in production!
-    })
+    }),
   ],
   controllers: [AppController],
-  providers: [
-    AppService
-  ],
+  providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
