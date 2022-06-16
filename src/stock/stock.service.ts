@@ -4,6 +4,7 @@ import { UpdateStockDto } from './dto/update-stock.dto';
 
 @Injectable()
 export class StockService {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   create(createStockDto: CreateStockDto) {
     return 'This action adds a new stock';
   }

@@ -1,30 +1,32 @@
-import { BaseColumn } from "src/utils/base.entity";
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Permission } from "./permission.entity";
-import { Role } from "./role.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Permission } from './permission.entity';
+import { Role } from './role.entity';
 
 @Entity()
-export class RolePermission extends BaseColumn {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+export class RolePermission {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    roleId: string;
+  @Column({
+    select: false,
+  })
+  roleId: string;
 
-    @Column()
-    permissionId: string;
+  @Column({
+    select: false,
+  })
+  permissionId: string;
 
-    @ManyToMany(() => Permission, (p) => p.role, {
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-    })
-    permission: Permission[];
+  @ManyToOne(() => Permission, (p) => p.rolePermission, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    eager: true,
+  })
+  permission: Permission;
 
-    @ManyToMany(() => Role, (r) => r.permission, {
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-        cascade: true,
-        eager: true,
-    })
-    role: Role[];
+  @ManyToOne(() => Role, (r) => r.rolePermissions, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
+  role: Role;
 }

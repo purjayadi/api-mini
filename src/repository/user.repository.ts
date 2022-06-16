@@ -6,47 +6,64 @@ import { BaseAbstractRepository } from './base/base.abstract.repository';
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RoleRepositoryInterface, UserRepositoryInterface, PermissionRepositoryInterface, RolePermissionRepositoryInterface } from './interface/user.repository.interface';
+import {
+  RoleRepositoryInterface,
+  UserRepositoryInterface,
+  PermissionRepositoryInterface,
+  RolePermissionRepositoryInterface,
+} from './interface/user.repository.interface';
 
 @Injectable()
-export class UserRepository extends BaseAbstractRepository<User> implements UserRepositoryInterface {
-
-    constructor(@InjectRepository(User)
+export class UserRepository
+  extends BaseAbstractRepository<User>
+  implements UserRepositoryInterface
+{
+  constructor(
+    @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    ) {
-        super(userRepository);
-    }
+  ) {
+    super(userRepository);
+  }
 }
 
 // role
 @Injectable()
-export class RoleRepository extends BaseAbstractRepository<Role> implements RoleRepositoryInterface {
-
-    constructor(@InjectRepository(Role)
+export class RoleRepository
+  extends BaseAbstractRepository<Role>
+  implements RoleRepositoryInterface
+{
+  constructor(
+    @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
-    ) {
-        super(roleRepository);
-    }
+  ) {
+    super(roleRepository);
+  }
 }
 
 // permission
 @Injectable()
-export class PermissionRepository extends BaseAbstractRepository<Permission> implements PermissionRepositoryInterface {
-
-    constructor(@InjectRepository(Permission)
+export class PermissionRepository
+  extends BaseAbstractRepository<Permission>
+  implements PermissionRepositoryInterface
+{
+  constructor(
+    @InjectRepository(Permission)
     private readonly permissionRepository: Repository<Permission>,
-    ) {
-        super(permissionRepository);
-    }
+  ) {
+    super(permissionRepository);
+  }
 }
 
 // role permission
 @Injectable()
-export class RolePermissionRepository extends BaseAbstractRepository<RolePermission> implements RolePermissionRepositoryInterface {
-
-    constructor(@InjectRepository(RolePermission)
+export class RolePermissionRepository
+  extends BaseAbstractRepository<RolePermission>
+  implements RolePermissionRepositoryInterface
+{
+  constructor(
+    @InjectRepository(RolePermission)
     private readonly rolePermissionRepository: Repository<RolePermission>,
-    ) {
-        super(rolePermissionRepository);
-    }
+  ) {
+    super(rolePermissionRepository);
+  }
 }

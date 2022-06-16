@@ -1,51 +1,66 @@
-import { BaseColumn } from "src/utils/base.entity";
-import { BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Role } from "./role.entity";
+import { Employee } from './../../employee/entities/employee.entity';
+import { BaseColumn } from 'src/utils/base.entity';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Role } from './role.entity';
 import * as bcrypt from 'bcrypt';
 
 @Entity()
 export class User extends BaseColumn {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column({
-        unique: true
-    })
-    username: string;
+  @Column({
+    unique: true,
+  })
+  username: string;
 
-    @Column({
-        select: true
-    })
-    password: string;
+  @Column()
+  password: string;
 
-    @Column()
-    employeeId: string;
+  @Column({
+    select: false,
+  })
+  employeeId: string;
 
-    @Column({
-        default: true
-    })
-    isActive: boolean;
+  @Column({
+    default: true,
+  })
+  isActive: boolean;
 
-    @Column()
-    roleId: string;
+  @Column({
+    select: false,
+  })
+  roleId: string;
 
-    @OneToMany(() => Role, (r) => r.user, {
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
-        cascade: true,
-        eager: true,
-    })
-    role: Role;
+  @ManyToOne(() => Role, (r) => r.user, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    eager: true,
+  })
+  role: Role;
 
-    @BeforeInsert()
-    async hashPassword() {
-        this.password = await bcrypt.hash(this.password, 10);
-    }
+  @OneToOne(() => Employee, (e) => e.user, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    eager: true,
+  })
+  @JoinColumn()
+  employee: Employee;
 
-    async validatePassword(password: string): Promise<boolean> {
-        return bcrypt.compare(password, this.password);
-    }
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
 
+  async validatePassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
 }
-
-

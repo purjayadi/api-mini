@@ -1,38 +1,60 @@
 import { IResponse } from '../utils/interfaces/response.interface';
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Req, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindUserDto } from './dto/find-user.dto';
 import { UserService } from './user.service';
-import { Request } from 'express';
+import { PermissionAction } from '../auth/casl.ability.factory';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CheckPermissions } from '../auth/permission.decorator';
+import { PermissionsGuard } from '../auth/permission.guard';
 
 @Controller('user')
 export class UserController {
-    constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
-    @Post()
-    create(@Body() createUserDto: CreateUserDto) {
-        return this.userService.create(createUserDto);
-    }
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @CheckPermissions([PermissionAction.CREATE, 'User'])
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
+  }
 
-    @Get()
-    findAll(@Query() payload: FindUserDto): Promise<IResponse> {
-        return this.userService.findAll(payload);
-    }
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @CheckPermissions([PermissionAction.READ, 'User'])
+  @Get()
+  findAll(@Query() payload: FindUserDto): Promise<IResponse> {
+    return this.userService.findAll(payload);
+  }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.userService.findOne(id);
-    }
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @CheckPermissions([PermissionAction.READ, 'User'])
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.userService.findOne(id);
+  }
 
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-        return this.userService.update(id, updateUserDto);
-    }
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @CheckPermissions([PermissionAction.UPDATE, 'User'])
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(id, updateUserDto);
+  }
 
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.userService.remove(id);
-    }
-
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @CheckPermissions([PermissionAction.DELETE, 'User'])
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.userService.remove(id);
+  }
 }

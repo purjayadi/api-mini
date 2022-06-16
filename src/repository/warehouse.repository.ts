@@ -6,12 +6,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { WarehouseRepositoryInterface } from './interface/warehouse.repository.interface';
 
 @Injectable()
-export class WarehouseRepository extends BaseAbstractRepository<Warehouse> implements WarehouseRepositoryInterface {
-
-    constructor(@InjectRepository(Warehouse)
+export class WarehouseRepository
+  extends BaseAbstractRepository<Warehouse>
+  implements WarehouseRepositoryInterface
+{
+  constructor(
+    @InjectRepository(Warehouse)
     private readonly warehouseRepository: Repository<Warehouse>,
-    ) {
-        super(warehouseRepository);
-    }
-
+  ) {
+    super(warehouseRepository);
+  }
 }

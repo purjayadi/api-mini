@@ -2,6 +2,7 @@ import { SupplierBankAccount } from './../../supplier/entities/supplierBankAccou
 import { Supplier } from './../../supplier/entities/supplier.entity';
 import { BaseInterfaceRepository } from '../base/base.interface.repository';
 
-export type SupplierRepositoryInterface = BaseInterfaceRepository<Supplier>
+export type SupplierRepositoryInterface = BaseInterfaceRepository<Supplier>;
 
-export type SupplierBankAccountRepositoryInterface = BaseInterfaceRepository<SupplierBankAccount>
+export type SupplierBankAccountRepositoryInterface =
+  BaseInterfaceRepository<SupplierBankAccount>;

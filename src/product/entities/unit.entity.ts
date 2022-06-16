@@ -4,15 +4,14 @@ import { Price } from './price.entity';
 
 @Entity()
 export class Unit extends BaseColumn {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @OneToMany(() => Price, s => s.unit, {
-        onUpdate: 'CASCADE'
-    })
-    prices: Price[];
-
+  @OneToMany(() => Price, (s) => s.unit, {
+    onUpdate: 'CASCADE',
+  })
+  prices: Price[];
 }

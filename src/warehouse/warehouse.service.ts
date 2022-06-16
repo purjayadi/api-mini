@@ -10,20 +10,26 @@ export class WarehouseService {
   constructor(
     @Inject('WarehouseRepositoryInterface')
     private readonly repository: WarehouseRepositoryInterface,
-
-  ) { }
+  ) {}
 
   async findAll(payload: FindDto): Promise<IResponse> {
     try {
       const { offset, limit } = payload;
       const warehouses = await this.repository.findWithRelations({
-        ...limit && { take: limit },
-        ...offset && { skip: offset }
+        ...(limit && { take: limit }),
+        ...(offset && { skip: offset }),
       });
-
-      return { data: warehouses, error: null, status: HttpStatus.OK };
+      return {
+        data: warehouses,
+        error: null,
+        status: HttpStatus.OK,
+      };
     } catch (error) {
-      return { message: "Unable to get warehouse", error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+      return {
+        message: 'Unable to get warehouse',
+        error: error.message,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
     }
   }
 
@@ -32,9 +38,17 @@ export class WarehouseService {
       await this.repository.create({
         ...payload,
       });
-      return { message: "Create warehouse successfully", error: null, status: HttpStatus.OK };
+      return {
+        message: 'Create warehouse successfully',
+        error: null,
+        status: HttpStatus.OK,
+      };
     } catch (error) {
-      return { message: "Unable to create warehouse", error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+      return {
+        message: 'Unable to create warehouse',
+        error: error.message,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
     }
   }
 
@@ -42,11 +56,19 @@ export class WarehouseService {
     try {
       const warehouse = await this.repository.findOneById(id);
       if (!warehouse) {
-        return { message: "Warehouse not Found", error: null, status: HttpStatus.NOT_FOUND };
+        return {
+          message: 'Warehouse not Found',
+          error: null,
+          status: HttpStatus.NOT_FOUND,
+        };
       }
       return { data: warehouse, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return { message: "Unable to get warehouse", error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+      return {
+        message: 'Unable to get warehouse',
+        error: error.message,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
     }
   }
 
@@ -54,12 +76,24 @@ export class WarehouseService {
     try {
       const warehouse = await this.repository.findOneById(id);
       if (!warehouse) {
-        return { data: null, error: ['Warehouse not Found'], status: HttpStatus.NOT_FOUND };
+        return {
+          data: null,
+          error: ['Warehouse not Found'],
+          status: HttpStatus.NOT_FOUND,
+        };
       }
       await this.repository.update(id, payload);
-      return { message: "Update warehouse successfully", error: null, status: HttpStatus.OK };
+      return {
+        message: 'Update warehouse successfully',
+        error: null,
+        status: HttpStatus.OK,
+      };
     } catch (error) {
-      return { message: "Unable to update warehouse", error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+      return {
+        message: 'Unable to update warehouse',
+        error: error.message,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
     }
   }
 
@@ -67,13 +101,24 @@ export class WarehouseService {
     try {
       const warehouse = await this.repository.findOneById(id);
       if (!warehouse) {
-        return { data: null, error: ['Warehouse not Found'], status: HttpStatus.NOT_FOUND };
+        return {
+          data: null,
+          error: ['Warehouse not Found'],
+          status: HttpStatus.NOT_FOUND,
+        };
       }
       await this.repository.remove(id);
-      return { message: "Delete warehouse successfully", error: null, status: HttpStatus.OK };
+      return {
+        message: 'Delete warehouse successfully',
+        error: null,
+        status: HttpStatus.OK,
+      };
     } catch (error) {
-      return { message: "Unable to delete warehouse", error: error.message, status: HttpStatus.INTERNAL_SERVER_ERROR };
+      return {
+        message: 'Unable to delete warehouse',
+        error: error.message,
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
     }
   }
-
 }

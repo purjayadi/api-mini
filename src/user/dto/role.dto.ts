@@ -1,7 +1,18 @@
-import { IsArray, IsNotEmpty, IsOptional, IsString, Min } from "class-validator";
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateRoleDto {
-    @IsString()
-    @IsNotEmpty()
-    public readonly name: string;
+  @IsString()
+  @IsNotEmpty()
+  public readonly name: string;
+}
+
+export class AssignPermission {
+  @IsNotEmpty()
+  permissions: Permission[];
+}
+
+export class Permission {
+  @IsString()
+  @IsNotEmpty()
+  public readonly id: string;
 }

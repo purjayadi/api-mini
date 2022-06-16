@@ -1,13 +1,15 @@
-import { Controller, Get, Post, Body, UseGuards, Req, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from './auth.service';
+import { PermissionAction } from './casl.ability.factory';
 import { AuthLoginDto } from './dto/auth.login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import RoleGuard from './roles.guard';
+import { CheckPermissions } from './permission.decorator';
+import { PermissionsGuard } from './permission.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   async login(@Body() authLoginDto: AuthLoginDto) {
@@ -15,15 +17,14 @@ export class AuthController {
   }
 
   @Get()
-  @UseGuards(RoleGuard('Marketing'))
   async test() {
     return 'Success!';
   }
 
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Get('/me')
-  @UseGuards(JwtAuthGuard)
-  @UseGuards(RoleGuard('Marketing'))
+  @CheckPermissions([PermissionAction.CREATE, 'User'])
   me(@Req() req: Request) {
-    return 'You are logged in';
+    return this.authService.me();
   }
 }
