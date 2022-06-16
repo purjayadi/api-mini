@@ -1,5 +1,6 @@
 import { IsBoolean, IsDateString, IsOptional } from 'class-validator';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { GenderFormat, StatusFormat } from '../entities/employee.entity';
 export class CreateEmployeeDto {
   @IsString()
   @IsNotEmpty()
@@ -18,7 +19,7 @@ export class CreateEmployeeDto {
 
   @IsEnum(['male', 'female'])
   @IsNotEmpty()
-  public readonly gender: string;
+  public readonly gender: GenderFormat;
 
   @IsString()
   @IsOptional()
@@ -30,7 +31,7 @@ export class CreateEmployeeDto {
 
   @IsEnum(['single', 'married'])
   @IsNotEmpty()
-  public readonly status: string;
+  public readonly status: StatusFormat;
 
   @IsBoolean()
   @IsOptional()

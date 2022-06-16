@@ -1,21 +1,22 @@
+import { Repository } from 'typeorm';
 import { FindDto } from './../utils/dto/find.dto';
-import { WarehouseRepositoryInterface } from './../repository/interface/warehouse.repository.interface';
 import { IResponse } from '../utils/interfaces/response.interface';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { UpdateWarehouseDto } from './dto/update-warehouse.dto';
+import { Warehouse } from './entities/warehouse.entity';
 
 @Injectable()
 export class WarehouseService {
   constructor(
-    @Inject('WarehouseRepositoryInterface')
-    private readonly repository: WarehouseRepositoryInterface,
+    @Inject('WAREHOUSE_REPOSITORY')
+    private readonly repository: Repository<Warehouse>,
   ) {}
 
   async findAll(payload: FindDto): Promise<IResponse> {
     try {
       const { offset, limit } = payload;
-      const warehouses = await this.repository.findWithRelations({
+      const warehouses = await this.repository.find({
         ...(limit && { take: limit }),
         ...(offset && { skip: offset }),
       });
@@ -35,7 +36,7 @@ export class WarehouseService {
 
   async create(payload: CreateWarehouseDto): Promise<IResponse> {
     try {
-      await this.repository.create({
+      await this.repository.save({
         ...payload,
       });
       return {
@@ -54,7 +55,7 @@ export class WarehouseService {
 
   async findOne(id: string): Promise<IResponse> {
     try {
-      const warehouse = await this.repository.findOneById(id);
+      const warehouse = await this.repository.findOneBy({ id });
       if (!warehouse) {
         return {
           message: 'Warehouse not Found',
@@ -74,7 +75,7 @@ export class WarehouseService {
 
   async update(id: string, payload: UpdateWarehouseDto): Promise<IResponse> {
     try {
-      const warehouse = await this.repository.findOneById(id);
+      const warehouse = await this.repository.findOneBy({ id });
       if (!warehouse) {
         return {
           data: null,
@@ -99,7 +100,7 @@ export class WarehouseService {
 
   async remove(id: string): Promise<IResponse> {
     try {
-      const warehouse = await this.repository.findOneById(id);
+      const warehouse = await this.repository.findOneBy({ id });
       if (!warehouse) {
         return {
           data: null,
@@ -107,7 +108,7 @@ export class WarehouseService {
           status: HttpStatus.NOT_FOUND,
         };
       }
-      await this.repository.remove(id);
+      await this.repository.delete(id);
       return {
         message: 'Delete warehouse successfully',
         error: null,

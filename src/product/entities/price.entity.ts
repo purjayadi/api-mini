@@ -1,7 +1,7 @@
+import { Unit } from '../../unit/entities/unit.entity';
 import { BaseColumn } from 'src/utils/base.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Product } from './product.entity';
-import { Unit } from './unit.entity';
 
 @Entity()
 export class Price extends BaseColumn {

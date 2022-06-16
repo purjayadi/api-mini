@@ -12,12 +12,12 @@ export class AddressController {
   }
 
   @Get('district/:id')
-  findDistrict(@Param('id') cityId: string): Promise<IResponse> {
+  findDistrict(@Param('id') cityId: number): Promise<IResponse> {
     return this.service.findDistrict(cityId);
   }
 
   @Get('sub-district/:id')
-  findSubDistrict(@Param('id') districtId: string): Promise<IResponse> {
+  findSubDistrict(@Param('id') districtId: number): Promise<IResponse> {
     return this.service.findSubDistrict(districtId);
   }
 }

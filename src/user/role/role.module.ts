@@ -1,28 +1,14 @@
-import {
-  RolePermissionRepository,
-  RoleRepository,
-} from './../../repository/user.repository';
+import { RolePermissionModule } from './../rolePermission/rolePermission.module';
+import { DatabaseModule } from 'src/database/database.module';
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Role } from '../entities/role.entity';
 import { RoleService } from './role.service';
 import { RoleController } from './role.controller';
-import { RolePermission } from '../entities/rolePermission.entity';
+import { roleProviders } from './role.provider';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Role, RolePermission])],
+  imports: [DatabaseModule, RolePermissionModule],
   controllers: [RoleController],
-  providers: [
-    {
-      provide: 'RoleRepositoryInterface',
-      useClass: RoleRepository,
-    },
-    {
-      provide: 'RolePermissionRepositoryInterface',
-      useClass: RolePermissionRepository,
-    },
-    RoleService,
-  ],
+  providers: [...roleProviders, RoleService],
   exports: [RoleService],
 })
 export class RoleModule {}

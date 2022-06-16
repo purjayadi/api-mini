@@ -1,4 +1,5 @@
-import { UserRepositoryInterface } from './../repository/interface/user.repository.interface';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
 import { IResponse } from '../utils/interfaces/response.interface';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -8,14 +9,14 @@ import { FindUserDto } from './dto/find-user.dto';
 @Injectable()
 export class UserService {
   constructor(
-    @Inject('UserRepositoryInterface')
-    private readonly repository: UserRepositoryInterface,
+    @Inject('USER_REPOSITORY')
+    private readonly repository: Repository<User>,
   ) {}
 
   async findAll(payload: FindUserDto): Promise<IResponse> {
     try {
       const { offset, limit } = payload;
-      const user = await this.repository.findWithRelations({
+      const user = await this.repository.find({
         relations: {
           role: true,
         },
@@ -38,7 +39,7 @@ export class UserService {
 
   async create(payload: CreateUserDto): Promise<IResponse> {
     try {
-      await this.repository.saveWithListener({
+      await this.repository.save({
         ...payload,
       });
       return {
@@ -57,7 +58,7 @@ export class UserService {
 
   async findOne(id: string): Promise<IResponse> {
     try {
-      const user = await this.repository.findOneById(id);
+      const user = await this.repository.findOneBy({ id });
       if (!user) {
         return {
           message: 'User not Found',
@@ -77,7 +78,7 @@ export class UserService {
 
   async update(id: string, payload: UpdateUserDto): Promise<IResponse> {
     try {
-      const user = await this.repository.findOneById(id);
+      const user = await this.repository.findOneBy({ id });
       if (!user) {
         return {
           data: null,
@@ -102,7 +103,7 @@ export class UserService {
 
   async remove(id: string): Promise<IResponse> {
     try {
-      const user = await this.repository.findOneById(id);
+      const user = await this.repository.findOneBy({ id });
       if (!user) {
         return {
           data: null,
@@ -110,7 +111,7 @@ export class UserService {
           status: HttpStatus.NOT_FOUND,
         };
       }
-      await this.repository.remove(id);
+      await this.repository.delete(id);
       return {
         message: 'Delete user successfully',
         error: null,
@@ -126,15 +127,19 @@ export class UserService {
   }
 
   async findOneByUsername(username: string): Promise<any> {
-    const user = await this.repository.findByCondition({
+    const user = await this.repository.findBy({
       username: username,
     });
     return user;
   }
 
   // check permission
-  async checkPermission(user: any) {
-    const users = await this.repository.findOneById(user);
-    return users;
+  async checkPermission(id: string) {
+    try {
+      const users = await this.repository.findOneBy({ id });
+      return users;
+    } catch (error) {
+      throw error;
+    }
   }
 }

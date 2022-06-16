@@ -1,22 +1,23 @@
+import { Repository } from 'typeorm';
 import { randomNumber } from './../utils/hellper';
 import { IResponse } from './../utils/interfaces/response.interface';
-import { EmployeeRepositoryInterface } from './../repository/interface/employee.repository.interface';
 import { FindEmployeeDto } from './dto/find-employee.dto';
-import { Inject, Injectable, HttpStatus, Logger } from '@nestjs/common';
+import { Inject, Injectable, HttpStatus } from '@nestjs/common';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import { Employee } from './entities/employee.entity';
 
 @Injectable()
 export class EmployeeService {
   constructor(
-    @Inject('EmployeeRepositoryInterface')
-    private readonly repository: EmployeeRepositoryInterface,
+    @Inject('EMPLOYEE_REPOSITORY')
+    private readonly repository: Repository<Employee>,
   ) {}
 
   async findAll(payload: FindEmployeeDto): Promise<IResponse> {
     try {
       const { offset, limit } = payload;
-      const employees = await this.repository.findWithRelations({
+      const employees = await this.repository.find({
         ...(limit && { take: limit }),
         ...(offset && { skip: offset }),
       });
@@ -33,10 +34,10 @@ export class EmployeeService {
 
   async create(payload: CreateEmployeeDto): Promise<IResponse> {
     try {
-      const count = await this.repository.countRecord();
+      const count = await this.repository.count();
       const number = randomNumber(10000, 99999);
       const code = 'NIP-' + (count + number + 1);
-      await this.repository.create({
+      await this.repository.save({
         ...payload,
         code: code,
       });
@@ -56,7 +57,7 @@ export class EmployeeService {
 
   async findOne(id: string): Promise<IResponse> {
     try {
-      const employee = await this.repository.findOneById(id);
+      const employee = await this.repository.findOneBy({ id });
       if (!employee) {
         return {
           message: 'Employee not Found',
@@ -76,7 +77,7 @@ export class EmployeeService {
 
   async update(id: string, payload: UpdateEmployeeDto): Promise<IResponse> {
     try {
-      const plan = await this.repository.findOneById(id);
+      const plan = await this.repository.findOneBy({ id });
       if (!plan) {
         return {
           data: null,
@@ -101,7 +102,7 @@ export class EmployeeService {
 
   async remove(id: string): Promise<IResponse> {
     try {
-      const plan = await this.repository.findOneById(id);
+      const plan = await this.repository.findOneBy({ id });
       if (!plan) {
         return {
           data: null,
@@ -109,7 +110,7 @@ export class EmployeeService {
           status: HttpStatus.NOT_FOUND,
         };
       }
-      await this.repository.remove(id);
+      await this.repository.delete({ id });
       return {
         message: 'Delete employee successfully',
         error: null,

@@ -1,3 +1,4 @@
+import { RolePermissionModule } from './user/rolePermission/rolePermission.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,19 +13,20 @@ import { StockModule } from './stock/stock.module';
 import { ReturModule } from './retur/retur.module';
 import { PurchaseModule } from './purchase/purchase.module';
 import { AccountingModule } from './accounting/accounting.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AddressModule } from './address/address.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './user/role/role.module';
 import { PermissionModule } from './user/permission/permission.module';
+import { ResourceModule } from './user/resource/resource.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ResourceModule,
     CustomerModule,
     ProductModule,
     EmployeeModule,
@@ -41,17 +43,7 @@ import { PermissionModule } from './user/permission/permission.module';
     AuthModule,
     RoleModule,
     PermissionModule,
-    TypeOrmModule.forRoot({
-      type: process.env.DB_TYPE as any,
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT),
-      username: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      logging: true,
-      synchronize: true, // never true in production!
-    }),
+    RolePermissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
