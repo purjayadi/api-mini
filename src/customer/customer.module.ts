@@ -1,21 +1,13 @@
-import { CaslAbilityFactory } from './../auth/casl.ability.factory';
+import { DatabaseModule } from './../database/database.module';
 import { AuthModule } from './../auth/auth.module';
-import { CustomerRepository } from './../repository/customer.repository';
 import { Module } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { CustomerController } from './customer.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Customer } from './entities/customer.entity';
+import { customerProviders } from './customer.provider';
 
 @Module({
-  imports: [AuthModule, TypeOrmModule.forFeature([Customer])],
+  imports: [AuthModule, DatabaseModule],
   controllers: [CustomerController],
-  providers: [
-    {
-      provide: 'CustomerRepositoryInterface',
-      useClass: CustomerRepository,
-    },
-    CustomerService,
-  ],
+  providers: [...customerProviders, CustomerService],
 })
 export class CustomerModule {}

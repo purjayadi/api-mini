@@ -1,20 +1,13 @@
 import { AuthModule } from './../auth/auth.module';
-import { WarehouseRepository } from './../repository/warehouse.repository';
+import { DatabaseModule } from './../database/database.module';
 import { Module } from '@nestjs/common';
 import { WarehouseService } from './warehouse.service';
 import { WarehouseController } from './warehouse.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Warehouse } from './entities/warehouse.entity';
+import { warehouseProviders } from './warehouse.provider';
 
 @Module({
-  imports: [AuthModule, TypeOrmModule.forFeature([Warehouse])],
+  imports: [AuthModule, DatabaseModule],
   controllers: [WarehouseController],
-  providers: [
-    {
-      provide: 'WarehouseRepositoryInterface',
-      useClass: WarehouseRepository,
-    },
-    WarehouseService,
-  ],
+  providers: [...warehouseProviders, WarehouseService],
 })
 export class WarehouseModule {}

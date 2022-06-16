@@ -1,21 +1,22 @@
+import { User } from 'src/user/entities/user.entity';
 import { IResponse } from '../utils/interfaces/response.interface';
-import { UserService } from './../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthLoginDto } from './dto/auth.login.dto';
 import {
-  forwardRef,
   HttpStatus,
   Inject,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(forwardRef(() => UserService))
-    private userService: UserService,
     private jwtService: JwtService,
+    @Inject('USER_REPOSITORY')
+    private readonly repository: Repository<User>,
   ) {}
 
   async login(authLoginDto: AuthLoginDto): Promise<IResponse> {
@@ -34,7 +35,7 @@ export class AuthService {
 
   async validateUser(authLoginDto: AuthLoginDto): Promise<any> {
     const { username, password } = authLoginDto;
-    const user = await this.userService.findOneByUsername(username);
+    const user = await this.repository.findOneBy({ username });
     const validatePassword = await user?.validatePassword(password);
     if (!user || !validatePassword) {
       throw new UnauthorizedException('Invalid credentials');
@@ -42,9 +43,17 @@ export class AuthService {
     return user;
   }
 
-  async checkAllPermission(user: any) {
-    const users = await this.userService.checkPermission(user);
-    return users;
+  async checkAllPermission(id: string) {
+    try {
+      const users = await this.repository.findOne({
+        where: {
+          id: id,
+        },
+      });
+      return users;
+    } catch (error) {
+      Logger.error(error);
+    }
   }
 
   async me() {

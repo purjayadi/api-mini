@@ -21,5 +21,5 @@ export class CreateProductDto {
 
   @IsArray()
   @IsOptional()
-  public readonly price: JSON;
+  public readonly price: any;
 }

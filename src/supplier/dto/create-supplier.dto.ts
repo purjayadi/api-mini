@@ -29,5 +29,5 @@ export class CreateSupplierDto {
 
   @IsArray()
   @IsOptional()
-  public readonly supplierBankAccount: JSON;
+  public readonly supplierBankAccount: any;
 }

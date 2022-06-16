@@ -1,22 +1,23 @@
+import { Repository } from 'typeorm';
 import { randomNumber } from './../utils/hellper';
 import { IResponse } from '../utils/interfaces/response.interface';
-import { ProductRepositoryInterface } from './../repository/interface/product.repository.interface';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FindProductDto } from './dto/find-product.dto';
+import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {
   constructor(
-    @Inject('ProductRepositoryInterface')
-    private readonly repository: ProductRepositoryInterface,
+    @Inject('PRODUCT_REPOSITORY')
+    private readonly repository: Repository<Product>,
   ) {}
 
   async findAll(payload: FindProductDto): Promise<IResponse> {
     try {
       const { offset, limit } = payload;
-      const Products = await this.repository.findWithRelations({
+      const Products = await this.repository.find({
         ...(limit && { take: limit }),
         ...(offset && { skip: offset }),
       });
@@ -33,10 +34,10 @@ export class ProductService {
 
   async create(payload: CreateProductDto): Promise<IResponse> {
     try {
-      const count = await this.repository.countRecord();
+      const count = await this.repository.count();
       const number = randomNumber(1000, 9999);
       const code = 'KB-' + (count + number + 1);
-      await this.repository.create({
+      await this.repository.save({
         ...payload,
         code: code,
         prices: payload.price,
@@ -57,7 +58,7 @@ export class ProductService {
 
   async findOne(id: string): Promise<IResponse> {
     try {
-      const Product = await this.repository.findOneById(id);
+      const Product = await this.repository.findOneBy({ id });
       if (!Product) {
         return {
           message: 'Product not Found',
@@ -77,7 +78,7 @@ export class ProductService {
 
   async update(id: string, payload: UpdateProductDto): Promise<IResponse> {
     try {
-      const Product = await this.repository.findOneById(id);
+      const Product = await this.repository.findOneBy({ id });
       if (!Product) {
         return {
           data: null,
@@ -102,7 +103,7 @@ export class ProductService {
 
   async remove(id: string): Promise<IResponse> {
     try {
-      const Product = await this.repository.findOneById(id);
+      const Product = await this.repository.findOneBy({ id });
       if (!Product) {
         return {
           data: null,
@@ -110,7 +111,7 @@ export class ProductService {
           status: HttpStatus.NOT_FOUND,
         };
       }
-      await this.repository.remove(id);
+      await this.repository.delete(id);
       return {
         message: 'Delete Product successfully',
         error: null,

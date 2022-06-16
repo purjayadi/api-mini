@@ -1,14 +1,6 @@
 import { Employee } from './../../employee/entities/employee.entity';
 import { BaseColumn } from '../../utils/base.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { City } from '../../address/entities/city.entity';
 import { SubDistrict } from '../../address/entities/subDistrict.entity';
 import { District } from '../../address/entities/district.entity';

@@ -1,10 +1,11 @@
+import { PurchaseOrder } from './../../purchase/entities/purchase.entity';
 import { Product } from './../../product/entities/product.entity';
 import { BaseColumn } from 'src/utils/base.entity';
 import {
   Column,
   Entity,
-  JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -26,6 +27,8 @@ export class Warehouse extends BaseColumn {
   @ManyToMany(() => Product, (p) => p.warehouses, {
     onUpdate: 'CASCADE',
   })
-  @JoinTable()
   products: Product[];
+
+  @OneToMany(() => PurchaseOrder, (p) => p.warehouse)
+  purchaseOrders: PurchaseOrder[];
 }

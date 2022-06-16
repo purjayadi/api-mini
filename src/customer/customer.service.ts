@@ -1,21 +1,22 @@
-import { CustomerRepositoryInterface } from './../repository/interface/customer.repository.interface';
+import { Repository } from 'typeorm';
 import { IResponse } from '../utils/interfaces/response.interface';
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { FindCustomerDto } from './dto/find-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { Customer } from './entities/customer.entity';
 
 @Injectable()
 export class CustomerService {
   constructor(
-    @Inject('CustomerRepositoryInterface')
-    private readonly repository: CustomerRepositoryInterface,
+    @Inject('CUSTOMER_REPOSITORY')
+    private readonly repository: Repository<Customer>,
   ) {}
 
   async findAll(payload: FindCustomerDto): Promise<IResponse> {
     try {
       const { offset, limit } = payload;
-      const employees = await this.repository.findWithRelations({
+      const employees = await this.repository.find({
         ...(limit && { take: limit }),
         ...(offset && { skip: offset }),
       });
@@ -32,7 +33,7 @@ export class CustomerService {
 
   async create(payload: CreateCustomerDto): Promise<IResponse> {
     try {
-      const count = await this.repository.countRecord();
+      const count = await this.repository.count();
       const code = 'CCP-' + (count + 10000 + 1);
       Logger.debug(code);
       await this.repository.create({
@@ -55,7 +56,7 @@ export class CustomerService {
 
   async findOne(id: string): Promise<IResponse> {
     try {
-      const customer = await this.repository.findOneById(id);
+      const customer = await this.repository.findOneBy({ id });
       if (!customer) {
         return {
           message: 'Customer not Found',
@@ -75,7 +76,7 @@ export class CustomerService {
 
   async update(id: string, payload: UpdateCustomerDto): Promise<IResponse> {
     try {
-      const customer = await this.repository.findOneById(id);
+      const customer = await this.repository.findOneBy({ id });
       if (!customer) {
         return {
           data: null,
@@ -100,7 +101,7 @@ export class CustomerService {
 
   async delete(id: string): Promise<IResponse> {
     try {
-      const customer = await this.repository.findOneById(id);
+      const customer = await this.repository.findOneBy({ id });
       if (!customer) {
         return {
           data: null,
@@ -108,7 +109,7 @@ export class CustomerService {
           status: HttpStatus.NOT_FOUND,
         };
       }
-      await this.repository.remove(id);
+      await this.repository.delete(id);
       return {
         message: 'Delete customer successfully',
         error: null,

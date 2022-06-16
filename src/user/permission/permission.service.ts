@@ -1,17 +1,20 @@
-import { PermissionRepositoryInterface } from './../../repository/interface/user.repository.interface';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { IResponse } from 'src/utils/interfaces/response.interface';
+import { Repository } from 'typeorm';
+import { CreatePermissionDto } from '../dto/permission.dto';
+import { Permission } from '../entities/permission.entity';
 
 @Injectable()
 export class PermissionService {
   constructor(
-    @Inject('PermissionRepositoryInterface')
-    private readonly repository: PermissionRepositoryInterface,
+    @Inject('PERMISSION_REPOSITORY')
+    private repository: Repository<Permission>,
   ) {}
 
   async findAll(payload: any) {
     try {
       const { offset, limit } = payload;
-      const permission = await this.repository.findWithRelations({
+      const permission = await this.repository.find({
         ...(limit && { take: limit }),
         ...(offset && { skip: offset }),
       });
@@ -26,13 +29,14 @@ export class PermissionService {
     }
   }
 
-  async create(payload: any) {
+  async create(payload: CreatePermissionDto): Promise<IResponse> {
     try {
-      await this.repository.create({
+      const permission = await this.repository.save({
         ...payload,
       });
       return {
         message: 'Create permission successfully',
+        data: permission,
         error: null,
         status: HttpStatus.OK,
       };
@@ -47,18 +51,18 @@ export class PermissionService {
 
   async findOne(id: string) {
     try {
-      const user = await this.repository.findOneById(id);
-      if (!user) {
+      const permission = await this.repository.findOneBy({ id: id });
+      if (!permission) {
         return {
-          message: 'User not Found',
+          message: 'permission not Found',
           error: null,
           status: HttpStatus.NOT_FOUND,
         };
       }
-      return { data: user, error: null, status: HttpStatus.OK };
+      return { data: permission, error: null, status: HttpStatus.OK };
     } catch (error) {
       return {
-        message: 'Unable to get user',
+        message: 'Unable to get permission',
         error: error.message,
         status: HttpStatus.INTERNAL_SERVER_ERROR,
       };
@@ -67,7 +71,7 @@ export class PermissionService {
 
   async update(id: string, payload: any) {
     try {
-      const permission = await this.repository.findOneById(id);
+      const permission = await this.repository.findOneBy({ id: id });
       if (!permission) {
         return {
           data: null,
@@ -92,7 +96,7 @@ export class PermissionService {
 
   async remove(id: string) {
     try {
-      const permission = await this.repository.findOneById(id);
+      const permission = await this.repository.findOneBy({ id: id });
       if (!permission) {
         return {
           data: null,
@@ -100,7 +104,7 @@ export class PermissionService {
           status: HttpStatus.NOT_FOUND,
         };
       }
-      await this.repository.remove(id);
+      await this.repository.delete(id);
       return {
         message: 'Delete permission successfully',
         error: null,

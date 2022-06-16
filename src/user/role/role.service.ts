@@ -1,25 +1,24 @@
+import { Repository } from 'typeorm';
 import { IResponse } from '../../utils/interfaces/response.interface';
-import {
-  RoleRepositoryInterface,
-  RolePermissionRepositoryInterface,
-} from './../../repository/interface/user.repository.interface';
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { AssignPermission } from '../dto/role.dto';
+import { Role } from '../entities/role.entity';
+import { RolePermission } from '../entities/rolePermission.entity';
 
 @Injectable()
 export class RoleService {
   constructor(
-    @Inject('RoleRepositoryInterface')
-    private readonly repository: RoleRepositoryInterface,
+    @Inject('ROLE_REPOSITORY')
+    private readonly repository: Repository<Role>,
 
-    @Inject('RolePermissionRepositoryInterface')
-    private readonly rolePermission: RolePermissionRepositoryInterface,
+    @Inject('ROLE_PERMISSION_REPOSITORY')
+    private readonly rolePermission: Repository<RolePermission>,
   ) {}
 
   async findAll(payload: any) {
     try {
       const { offset, limit } = payload;
-      const role = await this.repository.findWithRelations({
+      const role = await this.repository.find({
         ...(limit && { take: limit }),
         ...(offset && { skip: offset }),
       });
@@ -36,7 +35,7 @@ export class RoleService {
 
   async create(payload: any) {
     try {
-      await this.repository.create({
+      await this.repository.save({
         ...payload,
       });
       return {
@@ -55,7 +54,7 @@ export class RoleService {
 
   async findOne(id: string) {
     try {
-      const user = await this.repository.findOneById(id);
+      const user = await this.repository.findOneBy({ id });
       if (!user) {
         return {
           message: 'User not Found',
@@ -75,7 +74,7 @@ export class RoleService {
 
   async update(id: string, payload: any) {
     try {
-      const role = await this.repository.findOneById(id);
+      const role = await this.repository.findOneBy({ id });
       if (!role) {
         return {
           data: null,
@@ -100,7 +99,7 @@ export class RoleService {
 
   async remove(id: string) {
     try {
-      const role = await this.repository.findOneById(id);
+      const role = await this.repository.findOneBy({ id });
       if (!role) {
         return {
           data: null,
@@ -108,7 +107,7 @@ export class RoleService {
           status: HttpStatus.NOT_FOUND,
         };
       }
-      await this.repository.remove(id);
+      await this.repository.delete(id);
       return {
         message: 'Delete role successfully',
         error: null,
@@ -128,7 +127,7 @@ export class RoleService {
     payload: AssignPermission,
   ): Promise<IResponse> {
     try {
-      const role = await this.repository.findOneById(id);
+      const role = await this.repository.findOneBy({ id });
       if (!role) {
         return {
           data: null,
@@ -147,7 +146,7 @@ export class RoleService {
           });
         }
       }
-      await this.rolePermission.create(data);
+      await this.rolePermission.save(data);
       return {
         message: 'Assign permission successfully',
         error: null,

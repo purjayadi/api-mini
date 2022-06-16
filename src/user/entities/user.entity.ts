@@ -1,3 +1,4 @@
+import { PurchaseOrder } from './../../purchase/entities/purchase.entity';
 import { Employee } from './../../employee/entities/employee.entity';
 import { BaseColumn } from 'src/utils/base.entity';
 import {
@@ -6,6 +7,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -46,6 +48,11 @@ export class User extends BaseColumn {
     eager: true,
   })
   role: Role;
+
+  @OneToMany(() => PurchaseOrder, (p) => p.user, {
+    onDelete: 'SET NULL',
+  })
+  purchases: PurchaseOrder[];
 
   @OneToOne(() => Employee, (e) => e.user, {
     onUpdate: 'CASCADE',

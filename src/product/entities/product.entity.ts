@@ -1,3 +1,4 @@
+import { PurchaseOrderLine } from './../../purchase/entities/purchaseLine.entity';
 import { Warehouse } from './../../warehouse/entities/warehouse.entity';
 import { Supplier } from './../../supplier/entities/supplier.entity';
 import { BaseColumn } from 'src/utils/base.entity';
@@ -49,4 +50,7 @@ export class Product extends BaseColumn {
     cascade: true,
   })
   warehouses: Warehouse[];
+
+  @OneToMany(() => PurchaseOrderLine, (p) => p.product)
+  purchaseLines: PurchaseOrderLine[];
 }

@@ -1,13 +1,8 @@
+import { PurchaseOrder } from './../../purchase/entities/purchase.entity';
 import { Product } from './../../product/entities/product.entity';
 import { BaseColumn } from 'src/utils/base.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { SupplierBankAccount } from './supplierBankAccount.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { SupplierBankAccount } from '../../supplierAccount/entities/supplierBankAccount.entity';
 
 @Entity()
 export class Supplier extends BaseColumn {
@@ -35,12 +30,15 @@ export class Supplier extends BaseColumn {
     cascade: true,
     eager: true,
   })
-  @JoinTable()
   supplierBankAccount: SupplierBankAccount;
 
   @OneToMany(() => Product, (p) => p.supplier, {
     onUpdate: 'CASCADE',
   })
-  @JoinTable()
   products: Product[];
+
+  @OneToMany(() => PurchaseOrder, (p) => p.supplier, {
+    onUpdate: 'CASCADE',
+  })
+  purchases: PurchaseOrder[];
 }

@@ -1,22 +1,23 @@
+import { Repository } from 'typeorm';
 import { randomNumber } from './../utils/hellper';
 import { IResponse } from '../utils/interfaces/response.interface';
-import { SupplierRepositoryInterface } from './../repository/interface/supplier.repository.interface';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
 import { FindSupplierDto } from './dto/find-supplier.dto';
+import { Supplier } from './entities/supplier.entity';
 
 @Injectable()
 export class SupplierService {
   constructor(
-    @Inject('SupplierRepositoryInterface')
-    private readonly repository: SupplierRepositoryInterface,
+    @Inject('SUPPLIER_REPOSITORY')
+    private readonly repository: Repository<Supplier>,
   ) {}
 
   async findAll(payload: FindSupplierDto): Promise<IResponse> {
     try {
       const { offset, limit } = payload;
-      const suppliers = await this.repository.findWithRelations({
+      const suppliers = await this.repository.find({
         ...(limit && { take: limit }),
         ...(offset && { skip: offset }),
       });
@@ -33,10 +34,10 @@ export class SupplierService {
 
   async create(payload: CreateSupplierDto): Promise<IResponse> {
     try {
-      const count = await this.repository.countRecord();
+      const count = await this.repository.count();
       const number = randomNumber(1000, 9999);
       const code = 'SP-' + (count + number + 1);
-      await this.repository.create({
+      await this.repository.save({
         ...payload,
         code: code,
         supplierBankAccount: payload.supplierBankAccount,
@@ -57,7 +58,7 @@ export class SupplierService {
 
   async findOne(id: string): Promise<IResponse> {
     try {
-      const supplier = await this.repository.findOneById(id);
+      const supplier = await this.repository.findOneBy({ id });
       if (!supplier) {
         return {
           message: 'Supplier not Found',
@@ -77,7 +78,7 @@ export class SupplierService {
 
   async update(id: string, payload: UpdateSupplierDto): Promise<IResponse> {
     try {
-      const supplier = await this.repository.findOneById(id);
+      const supplier = await this.repository.findOneBy({ id });
       if (!supplier) {
         return {
           data: null,
@@ -102,7 +103,7 @@ export class SupplierService {
 
   async remove(id: string): Promise<IResponse> {
     try {
-      const supplier = await this.repository.findOneById(id);
+      const supplier = await this.repository.findOneBy({ id });
       if (!supplier) {
         return {
           data: null,
@@ -110,7 +111,7 @@ export class SupplierService {
           status: HttpStatus.NOT_FOUND,
         };
       }
-      await this.repository.remove(id);
+      await this.repository.delete(id);
       return {
         message: 'Delete supplier successfully',
         error: null,
