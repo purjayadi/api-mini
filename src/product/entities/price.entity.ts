@@ -1,10 +1,9 @@
 import { Unit } from '../../unit/entities/unit.entity';
-import { BaseColumn } from 'src/utils/base.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Product } from './product.entity';
 
 @Entity()
-export class Price extends BaseColumn {
+export class Price {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -28,6 +27,8 @@ export class Price extends BaseColumn {
   @ManyToOne(() => Product, (s) => s.prices)
   product: Product;
 
-  @ManyToOne(() => Unit, (s) => s.prices)
+  @ManyToOne(() => Unit, (s) => s.prices, {
+    eager: true,
+  })
   unit: Unit;
 }
