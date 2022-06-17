@@ -29,6 +29,7 @@ export class User extends BaseColumn {
 
   @Column({
     select: false,
+    nullable: true
   })
   employeeId: string;
 

@@ -1,7 +1,6 @@
 import { PermissionAction } from './../auth/casl.ability.factory';
 import { PermissionsGuard } from './../auth/permission.guard';
 import { JwtAuthGuard } from './../auth/jwt-auth.guard';
-import { IPagination } from './../utils/interfaces/request.interface';
 import { IResponse } from './../utils/interfaces/response.interface';
 import {
   Controller,
