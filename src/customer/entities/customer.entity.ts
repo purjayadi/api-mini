@@ -1,6 +1,13 @@
+import { Schedule } from './../../schedule/entities/schedule.entity';
 import { Employee } from './../../employee/entities/employee.entity';
 import { BaseColumn } from '../../utils/base.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { City } from '../../address/entities/city.entity';
 import { SubDistrict } from '../../address/entities/subDistrict.entity';
 import { District } from '../../address/entities/district.entity';
@@ -78,4 +85,10 @@ export class Customer extends BaseColumn {
     eager: true,
   })
   employee: Employee;
+
+  @OneToMany(() => Schedule, (s) => s.customer, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
+  schedules: Schedule[];
 }

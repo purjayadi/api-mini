@@ -1,3 +1,4 @@
+import { ScheduleDetail } from './../../schedule/entities/scheduleDetail.entity';
 import { PurchaseOrderLine } from './../../purchase/entities/purchaseLine.entity';
 import { Price } from '../../product/entities/price.entity';
 import { BaseColumn } from 'src/utils/base.entity';
@@ -20,4 +21,7 @@ export class Unit extends BaseColumn {
     onUpdate: 'CASCADE',
   })
   purchaseLines: PurchaseOrderLine[];
+
+  @OneToMany(() => ScheduleDetail, (s) => s.unit)
+  scheduleDetails: ScheduleDetail[];
 }
