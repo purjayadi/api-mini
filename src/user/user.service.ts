@@ -39,9 +39,7 @@ export class UserService {
 
   async create(payload: CreateUserDto): Promise<IResponse> {
     try {
-      await this.repository.save({
-        ...payload,
-      });
+      await this.repository.save(this.repository.create(payload));
       return {
         message: 'Create user successfully',
         error: null,

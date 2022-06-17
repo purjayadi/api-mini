@@ -13,7 +13,7 @@ import { SubDistrict } from './subDistrict.entity';
 @Entity()
 export class District {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column()
   name: string;

@@ -1,7 +1,14 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { runSeeders, SeederOptions } from 'typeorm-extension';
-import resourceFactory from './factories/resource.factory';
+import {
+  createDatabase,
+  dropDatabase,
+  runSeeders,
+  SeederOptions,
+} from 'typeorm-extension';
+import CitySeeder from './seeds/city.seeder';
+import DistrictSeeder from './seeds/district.seeder';
 import ResourceSeeder from './seeds/resource.seeder';
+import SubDistrictSeeder from './seeds/subDistrict.seeder';
 
 export const databaseProviders = [
   {
@@ -17,9 +24,17 @@ export const databaseProviders = [
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         logging: process.env.APP_ENV === 'development',
         synchronize: process.env.APP_ENV === 'development',
-        seeds: [ResourceSeeder],
-        factories: [resourceFactory],
+        seeds: [ResourceSeeder, CitySeeder, DistrictSeeder, SubDistrictSeeder],
+        factories: [],
       };
+      await dropDatabase({
+        options: options as DataSourceOptions,
+        ifExist: true,
+      });
+      await createDatabase({
+        options: options as DataSourceOptions,
+        ifNotExist: true,
+      });
       const dataSource = new DataSource(options);
       const source = await dataSource.initialize();
       await runSeeders(dataSource);
