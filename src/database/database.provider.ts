@@ -1,5 +1,7 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { SeederOptions } from 'typeorm-extension';
+import { runSeeders, SeederOptions } from 'typeorm-extension';
+import resourceFactory from './factories/resource.factory';
+import ResourceSeeder from './seeds/resource.seeder';
 
 export const databaseProviders = [
   {
@@ -15,11 +17,13 @@ export const databaseProviders = [
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         logging: process.env.APP_ENV === 'development',
         synchronize: process.env.APP_ENV === 'development',
-        seeds: ['./seeds/**/*{.ts,.js}'],
-        factories: ['./factories/**/*{.ts,.js}'],
+        seeds: [ResourceSeeder],
+        factories: [resourceFactory],
       };
       const dataSource = new DataSource(options);
-      return dataSource.initialize();
+      const source = await dataSource.initialize();
+      await runSeeders(dataSource);
+      return source;
     },
   },
 ];
