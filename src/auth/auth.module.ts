@@ -1,7 +1,7 @@
 import { DatabaseModule } from 'src/database/database.module';
 import { userProviders } from './../user/user.provider';
 import { UserModule } from './../user/user.module';
-import { Module, UseInterceptors } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
