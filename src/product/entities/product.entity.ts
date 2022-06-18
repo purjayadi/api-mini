@@ -1,3 +1,4 @@
+import { OrderDetail } from './../../order/entities/orderDetail.entity';
 import { ScheduleDetail } from './../../schedule/entities/scheduleDetail.entity';
 import { PurchaseOrderLine } from './../../purchase/entities/purchaseLine.entity';
 import { Warehouse } from './../../warehouse/entities/warehouse.entity';
@@ -57,4 +58,7 @@ export class Product extends BaseColumn {
 
   @OneToMany(() => ScheduleDetail, (s) => s.product)
   scheduleDetails: ScheduleDetail[];
+
+  @OneToMany(() => OrderDetail, (o) => o.product)
+  orderDetails: OrderDetail[];
 }
