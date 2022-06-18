@@ -1,3 +1,4 @@
+import { OrderDetail } from './../../order/entities/orderDetail.entity';
 import { ScheduleDetail } from './../../schedule/entities/scheduleDetail.entity';
 import { PurchaseOrderLine } from './../../purchase/entities/purchaseLine.entity';
 import { Price } from '../../product/entities/price.entity';
@@ -24,4 +25,7 @@ export class Unit extends BaseColumn {
 
   @OneToMany(() => ScheduleDetail, (s) => s.unit)
   scheduleDetails: ScheduleDetail[];
+
+  @OneToMany(() => OrderDetail, (s) => s.unit)
+  orderDetails: OrderDetail[];
 }

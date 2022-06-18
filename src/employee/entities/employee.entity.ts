@@ -1,3 +1,4 @@
+import { Order } from './../../order/entities/order.entity';
 import { Schedule } from './../../schedule/entities/schedule.entity';
 import { User } from './../../user/entities/user.entity';
 import { Customer } from './../../customer/entities/customer.entity';
@@ -85,4 +86,7 @@ export class Employee extends BaseColumn {
     onDelete: 'CASCADE',
   })
   schedules: Schedule[];
+
+  @OneToMany(() => Order, (o) => o.employee)
+  orders: Order[];
 }

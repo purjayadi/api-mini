@@ -36,7 +36,7 @@ export class CustomerService {
       const count = await this.repository.count();
       const code = 'CCP-' + (count + 10000 + 1);
       Logger.debug(code);
-      await this.repository.create({
+      await this.repository.save({
         ...payload,
         code: code,
       });
