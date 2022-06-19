@@ -24,5 +24,7 @@ module.exports = {
     'space-before-function-paren': ['error', 'never'],
     'prettier/prettier': ['warn', { endOfLine: 'auto' }],
     'space-before-function-paren': 'off',
+    //no console.log
+    'no-console': 'warn',
   },
 };

@@ -8,10 +8,14 @@ export class OrderDetail {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({
+    select: false,
+  })
   orderId: string;
 
-  @Column()
+  @Column({
+    select: false,
+  })
   productId: string;
 
   @Column({
@@ -35,10 +39,15 @@ export class OrderDetail {
   })
   subTotal: number;
 
-  @Column()
+  @Column({
+    select: false,
+  })
   unitId: string;
 
-  @ManyToOne(() => Order, (order) => order.orderDetails)
+  @ManyToOne(() => Order, (order) => order.orderDetails, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
   order: Order;
 
   @ManyToOne(() => Product, (product) => product.orderDetails, {
