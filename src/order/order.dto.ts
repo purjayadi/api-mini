@@ -8,7 +8,7 @@ import {
   IsString,
   ValidateIf,
 } from 'class-validator';
-import { PaymentMethod, Status } from './entities/order.entity';
+import { PaymentMethod } from './entities/order.entity';
 
 export class FindOrderDto {
   @IsOptional()
@@ -20,6 +20,19 @@ export class FindOrderDto {
   @IsString()
   @IsOptional()
   public readonly query: string;
+
+  // @IsBoolean()
+  @IsOptional()
+  public readonly withDeleted: string;
+
+  @IsOptional()
+  public readonly orderBy: string;
+
+  @IsOptional()
+  public readonly order: string;
+
+  @IsOptional()
+  public readonly search: string;
 }
 
 export class CreateOrderDto {

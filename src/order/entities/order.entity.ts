@@ -2,6 +2,7 @@ import { Employee } from './../../employee/entities/employee.entity';
 import { Customer } from './../../customer/entities/customer.entity';
 import { BaseColumn } from 'src/utils/base.entity';
 import {
+  AfterSoftRemove,
   Column,
   Entity,
   ManyToOne,
@@ -35,7 +36,7 @@ export class Order extends BaseColumn {
   @Column({
     type: 'date',
   })
-  date: Date;
+  date: Date | string;
 
   @Column({
     type: 'enum',
@@ -49,10 +50,14 @@ export class Order extends BaseColumn {
   })
   total: number;
 
-  @Column()
+  @Column({
+    select: false,
+  })
   customerId: string;
 
-  @Column()
+  @Column({
+    select: false,
+  })
   employeeId: string;
 
   @Column({
@@ -74,6 +79,8 @@ export class Order extends BaseColumn {
   paymentMethod: PaymentMethod;
 
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.order, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
     cascade: true,
     eager: true,
   })
@@ -88,4 +95,9 @@ export class Order extends BaseColumn {
     eager: true,
   })
   employee: Employee;
+
+  @AfterSoftRemove()
+  updateStatus() {
+    this.status = Status.CANCELED;
+  }
 }

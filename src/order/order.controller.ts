@@ -8,6 +8,8 @@ import {
   Delete,
   Query,
   UseGuards,
+  Put,
+  Logger,
 } from '@nestjs/common';
 import { PermissionAction } from 'src/auth/casl.ability.factory';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -25,6 +27,9 @@ export class OrderController {
   @CheckPermissions([PermissionAction.READ, 'Order'])
   @Get()
   findAll(@Query() payload: FindOrderDto): Promise<IResponse> {
+    Logger.debug(
+      `offset: ${payload.offset}, limit: ${payload.limit}, withDeleted: ${payload.withDeleted}`,
+    );
     return this.service.findAll(payload);
   }
 
@@ -54,5 +59,19 @@ export class OrderController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.service.remove(id);
+  }
+
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @CheckPermissions([PermissionAction.DELETE, 'Order'])
+  @Delete('soft-remove/:id')
+  softRemove(@Param('id') id: string) {
+    return this.service.softDelete(id);
+  }
+
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @CheckPermissions([PermissionAction.DELETE, 'Order'])
+  @Put('restore/:id')
+  restoreOrder(@Param('id') id: string) {
+    return this.service.restoreSoftDelete(id);
   }
 }
