@@ -1,42 +1,20 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { FilterDto } from './../dto/filters.dto';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { StockService } from './stock.service';
-import { CreateStockDto } from './dto/create-stock.dto';
-import { UpdateStockDto } from './dto/update-stock.dto';
+import { PermissionAction } from 'src/auth/casl.ability.factory';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { CheckPermissions } from 'src/auth/permission.decorator';
+import { PermissionsGuard } from 'src/auth/permission.guard';
 
 @Controller('stock')
 export class StockController {
   constructor(private readonly stockService: StockService) {}
 
-  @Post()
-  create(@Body() createStockDto: CreateStockDto) {
-    return this.stockService.create(createStockDto);
-  }
-
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @CheckPermissions([PermissionAction.READ, 'Stock'])
   @Get()
-  findAll() {
-    return this.stockService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.stockService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStockDto: UpdateStockDto) {
-    return this.stockService.update(+id, updateStockDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.stockService.remove(+id);
+  @Get()
+  findAll(@Query() payload: FilterDto) {
+    return this.stockService.findAll(payload);
   }
 }

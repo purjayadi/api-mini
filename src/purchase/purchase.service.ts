@@ -1,3 +1,5 @@
+import { ProductService } from './../product/product.service';
+import { StockService } from './../stock/stock.service';
 import { IResponse } from './../utils/interfaces/response.interface';
 import { randomNumber } from './../utils/hellper';
 import { PurchaseOrder } from './entities/purchase.entity';
@@ -14,7 +16,8 @@ export class PurchaseService {
   constructor(
     @Inject('PURCHASE_REPOSITORY')
     private readonly repository: Repository<PurchaseOrder>,
-
+    private readonly stock: StockService,
+    private readonly product: ProductService,
     @Inject('PURCHASE_ORDER_LINE_REPOSITORY')
     private readonly pol: Repository<PurchaseOrder>,
   ) {}
@@ -24,10 +27,20 @@ export class PurchaseService {
       const count = await this.repository.count();
       const number = randomNumber(10000, 99999);
       const code = 'INP-' + (count + number + 1);
-      await this.repository.save({
+      const purchase = await this.repository.save({
         ...payload,
         code: code,
       });
+      if (purchase) {
+        payload.purchaseLines.map(async (line) => {
+          const productValue = await this.product.findValueProductByUnit(
+            line.productId,
+            line.unitId,
+          );
+          const quantity = productValue.value * line.quantity;
+          this.stock.increment(line.productId, quantity);
+        });
+      }
       return {
         message: 'Create purchase order successfully',
         error: null,

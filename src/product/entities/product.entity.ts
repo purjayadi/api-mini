@@ -1,3 +1,4 @@
+import { Stock } from './../../stock/entities/stock.entity';
 import { OrderDetail } from './../../order/entities/orderDetail.entity';
 import { ScheduleDetail } from './../../schedule/entities/scheduleDetail.entity';
 import { PurchaseOrderLine } from './../../purchase/entities/purchaseLine.entity';
@@ -10,6 +11,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Price } from './price.entity';
@@ -61,4 +63,7 @@ export class Product extends BaseColumn {
 
   @OneToMany(() => OrderDetail, (o) => o.product)
   orderDetails: OrderDetail[];
+
+  @OneToOne(() => Stock, (s) => s.product)
+  stock: Stock;
 }
