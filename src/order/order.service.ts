@@ -1,3 +1,5 @@
+import { ProductService } from './../product/product.service';
+import { StockService } from './../stock/stock.service';
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { Repository, Like } from 'typeorm';
 import { Order } from './entities/order.entity';
@@ -9,6 +11,8 @@ export class OrderService {
   constructor(
     @Inject('ORDER_REPOSITORY')
     private readonly repository: Repository<Order>,
+    private readonly stock: StockService,
+    private readonly product: ProductService,
   ) {}
 
   async findAll(payload: FindOrderDto): Promise<IResponse> {
@@ -59,10 +63,20 @@ export class OrderService {
           ? (data[0].invNumber.replace(/^\D+/g, '') as unknown as number)
           : 1000;
       const invNumber = 'INV-' + (Number(lastInvoice) + 1);
-      await this.repository.save({
+      const order = await this.repository.save({
         ...payload,
         invNumber: invNumber,
       });
+      if (order) {
+        order.orderDetails.map(async (detail) => {
+          const productValue = await this.product.findValueProductByUnit(
+            detail.productId,
+            detail.unitId,
+          );
+          const quantity = productValue.value * detail.quantity;
+          this.stock.decrement(detail.productId, quantity);
+        });
+      }
       return {
         message: 'Create order successfully',
         error: null,

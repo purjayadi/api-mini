@@ -1,3 +1,4 @@
+import { StockService } from './../stock/stock.service';
 import { Repository } from 'typeorm';
 import { randomNumber } from './../utils/hellper';
 import { IResponse } from '../utils/interfaces/response.interface';
@@ -6,12 +7,18 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FindProductDto } from './dto/find-product.dto';
 import { Product } from './entities/product.entity';
+import { Price } from './entities/price.entity';
 
 @Injectable()
 export class ProductService {
   constructor(
     @Inject('PRODUCT_REPOSITORY')
     private readonly repository: Repository<Product>,
+
+    @Inject('PRODUCT_PRICE_REPOSITORY')
+    private readonly price: Repository<Price>,
+
+    private readonly stock: StockService,
   ) {}
 
   async findAll(payload: FindProductDto): Promise<IResponse> {
@@ -37,11 +44,14 @@ export class ProductService {
       const count = await this.repository.count();
       const number = randomNumber(1000, 9999);
       const code = 'KB-' + (count + number + 1);
-      await this.repository.save({
+      const product = await this.repository.save({
         ...payload,
         code: code,
         prices: payload.price,
       });
+      if (product) {
+        await this.stock.increment(product.id, 0);
+      }
       return {
         message: 'Create Product successfully',
         error: null,
@@ -124,5 +134,12 @@ export class ProductService {
         status: HttpStatus.INTERNAL_SERVER_ERROR,
       };
     }
+  }
+
+  findValueProductByUnit(productId: string, unitId: string): Promise<Price> {
+    const price = this.price.findOne({
+      where: { productId: productId, unitId: unitId },
+    });
+    return price;
   }
 }
