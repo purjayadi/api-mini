@@ -47,7 +47,7 @@ export class ProductService {
       const product = await this.repository.save({
         ...payload,
         code: code,
-        prices: payload.price,
+        prices: payload.prices,
       });
       if (product) {
         await this.stock.increment(product.id, 0);
@@ -96,7 +96,12 @@ export class ProductService {
           status: HttpStatus.NOT_FOUND,
         };
       }
-      await this.repository.update(id, payload);
+      const newPayload = {
+        ...payload,
+        id: id,
+      };
+      const updatedProduct = this.repository.preload(newPayload);
+      await this.repository.save(await updatedProduct);
       return {
         message: 'Update Product successfully',
         error: null,
