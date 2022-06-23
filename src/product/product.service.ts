@@ -1,13 +1,13 @@
 import { StockService } from './../stock/stock.service';
 import { Repository } from 'typeorm';
-import { randomNumber } from './../utils/hellper';
-import { IResponse } from '../utils/interfaces/response.interface';
+import { paginateResponse, randomNumber } from './../utils/hellper';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FindProductDto } from './dto/find-product.dto';
 import { Product } from './entities/product.entity';
 import { Price } from './entities/price.entity';
+import { IPaginate, IResponse } from '../interface/response.interface';
 
 @Injectable()
 export class ProductService {
@@ -21,15 +21,14 @@ export class ProductService {
     private readonly stock: StockService,
   ) {}
 
-  async findAll(payload: FindProductDto): Promise<IResponse> {
+  async findAll(payload: FindProductDto): Promise<IPaginate | IResponse> {
     try {
       const { offset, limit } = payload;
-      const Products = await this.repository.find({
+      const Products = await this.repository.findAndCount({
         ...(limit && { take: limit }),
-        ...(offset && { skip: offset }),
+        ...(offset && { skip: (offset - 1) * limit }),
       });
-
-      return { data: Products, error: null, status: HttpStatus.OK };
+      return paginateResponse(Products, offset, limit, null, HttpStatus.OK);
     } catch (error) {
       return {
         message: 'Unable to get Product',

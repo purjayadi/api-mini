@@ -1,5 +1,6 @@
+import { paginateResponse } from 'src/utils/hellper';
 import { Repository } from 'typeorm';
-import { IResponse } from '../utils/interfaces/response.interface';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { FindCustomerDto } from './dto/find-customer.dto';
@@ -13,15 +14,14 @@ export class CustomerService {
     private readonly repository: Repository<Customer>,
   ) {}
 
-  async findAll(payload: FindCustomerDto): Promise<IResponse> {
+  async findAll(payload: FindCustomerDto): Promise<IResponse | IPaginate> {
     try {
       const { offset, limit } = payload;
-      const employees = await this.repository.find({
+      const customers = await this.repository.findAndCount({
         ...(limit && { take: limit }),
-        ...(offset && { skip: offset }),
+        ...(offset && { skip: (offset - 1) * limit }),
       });
-
-      return { data: employees, error: null, status: HttpStatus.OK };
+      return paginateResponse(customers, offset, limit, null, HttpStatus.OK);
     } catch (error) {
       return {
         message: 'Unable to get employee',

@@ -40,15 +40,18 @@ export class StockService {
         stock.quantity += quantity;
         await this.repository.save(stock);
         Logger.log('Increment stock successfully');
+        return true;
       } else {
         const newStock = new Stock();
         newStock.productId = productId;
         newStock.quantity = quantity;
         await this.repository.save(newStock);
         Logger.log('Create initial stock successfully');
+        return true;
       }
     } catch (error) {
       Logger.log(error);
+      return false;
     }
   }
 
@@ -67,5 +70,14 @@ export class StockService {
     } catch (error) {
       Logger.log(error);
     }
+  }
+
+  async findOne(id: string): Promise<Stock> {
+    const stock = await this.repository.findOne({
+      where: {
+        productId: id,
+      },
+    });
+    return stock;
   }
 }

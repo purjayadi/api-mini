@@ -1,4 +1,4 @@
-import { IResponse } from '../utils/interfaces/response.interface';
+import { IPaginate, IResponse } from '../interface/response.interface';
 import {
   Controller,
   Get,
@@ -33,7 +33,7 @@ export class ProductController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.READ, 'Product'])
   @Get()
-  findAll(@Query() payload: FindProductDto): Promise<IResponse> {
+  findAll(@Query() payload: FindProductDto): Promise<IPaginate | IResponse> {
     return this.productService.findAll(payload);
   }
 

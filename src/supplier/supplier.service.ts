@@ -1,11 +1,12 @@
+import { paginateResponse } from 'src/utils/hellper';
 import { Repository } from 'typeorm';
 import { randomNumber } from './../utils/hellper';
-import { IResponse } from '../utils/interfaces/response.interface';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
 import { FindSupplierDto } from './dto/find-supplier.dto';
 import { Supplier } from './entities/supplier.entity';
+import { IResponse, IPaginate } from '../interface/response.interface';
 
 @Injectable()
 export class SupplierService {
@@ -14,15 +15,14 @@ export class SupplierService {
     private readonly repository: Repository<Supplier>,
   ) {}
 
-  async findAll(payload: FindSupplierDto): Promise<IResponse> {
+  async findAll(payload: FindSupplierDto): Promise<IResponse | IPaginate> {
     try {
       const { offset, limit } = payload;
-      const suppliers = await this.repository.find({
+      const suppliers = await this.repository.findAndCount({
         ...(limit && { take: limit }),
-        ...(offset && { skip: offset }),
+        ...(offset && { skip: (offset - 1) * limit }),
       });
-
-      return { data: suppliers, error: null, status: HttpStatus.OK };
+      return paginateResponse(suppliers, offset, limit, null, HttpStatus.OK);
     } catch (error) {
       return {
         message: 'Unable to get supplier',

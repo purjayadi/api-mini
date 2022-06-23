@@ -1,6 +1,6 @@
+import { paginateResponse } from 'src/utils/hellper';
 import { ProductService } from './../product/product.service';
 import { StockService } from './../stock/stock.service';
-import { IResponse } from './../utils/interfaces/response.interface';
 import { randomNumber } from './../utils/hellper';
 import { PurchaseOrder } from './entities/purchase.entity';
 import { Repository } from 'typeorm';
@@ -10,6 +10,7 @@ import {
   FindPurchaseDto,
   UpdatePurchaseDto,
 } from './purchase.dto';
+import { IPaginate, IResponse } from '../interface/response.interface';
 
 @Injectable()
 export class PurchaseService {
@@ -55,14 +56,20 @@ export class PurchaseService {
     }
   }
 
-  async findAll(payload: FindPurchaseDto): Promise<IResponse> {
+  async findAll(payload: FindPurchaseDto): Promise<IResponse | IPaginate> {
     try {
       const { offset, limit } = payload;
-      const purchaseOrders = await this.repository.find({
+      const purchaseOrders = await this.repository.findAndCount({
         ...(limit && { take: limit }),
-        ...(offset && { skip: offset }),
+        ...(offset && { skip: (offset - 1) * limit }),
       });
-      return { data: purchaseOrders, error: null, status: HttpStatus.OK };
+      return paginateResponse(
+        purchaseOrders,
+        offset,
+        limit,
+        null,
+        HttpStatus.OK,
+      );
     } catch (error) {
       return {
         message: 'Unable to get purchase order',

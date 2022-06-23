@@ -1,6 +1,6 @@
 import { FindDto } from './../utils/dto/find.dto';
 import { WarehouseService } from './warehouse.service';
-import { IResponse } from '../utils/interfaces/response.interface';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
 import {
   Controller,
   Get,
@@ -33,7 +33,7 @@ export class WarehouseController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.READ, 'Warehouse'])
   @Get()
-  findAll(@Query() payload: FindDto): Promise<IResponse> {
+  findAll(@Query() payload: FindDto): Promise<IResponse | IPaginate> {
     return this.service.findAll(payload);
   }
 
