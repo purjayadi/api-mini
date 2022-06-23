@@ -22,24 +22,24 @@ export const databaseProviders = [
         password: process.env.DB_PASS,
         database: process.env.DB_NAME,
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        logging: process.env.APP_ENV === 'development',
+        // logging: process.env.APP_ENV === 'development',
         synchronize: process.env.APP_ENV === 'development',
         seeds: [ResourceSeeder, CitySeeder, DistrictSeeder, SubDistrictSeeder],
         factories: [],
       };
-      if (process.env.APP_ENV === 'development') {
-        await dropDatabase({
-          options: options as DataSourceOptions,
-          ifExist: true,
-        });
-        await createDatabase({
-          options: options as DataSourceOptions,
-          ifNotExist: true,
-        });
-      }
+      // if (process.env.APP_ENV === 'development') {
+      //   await dropDatabase({
+      //     options: options as DataSourceOptions,
+      //     ifExist: true,
+      //   });
+      //   await createDatabase({
+      //     options: options as DataSourceOptions,
+      //     ifNotExist: true,
+      //   });
+      // }
       const dataSource = new DataSource(options);
       const source = await dataSource.initialize();
-      await runSeeders(dataSource);
+      // await runSeeders(dataSource);
       return source;
     },
   },

@@ -1,7 +1,7 @@
 import { PermissionAction } from './../auth/casl.ability.factory';
 import { PermissionsGuard } from './../auth/permission.guard';
 import { JwtAuthGuard } from './../auth/jwt-auth.guard';
-import { IResponse } from '../utils/interfaces/response.interface';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
 import {
   Controller,
   Get,
@@ -33,7 +33,7 @@ export class CustomerController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.READ, 'Customer'])
   @Get()
-  findAll(@Query() payload: FindCustomerDto): Promise<IResponse> {
+  findAll(@Query() payload: FindCustomerDto): Promise<IResponse | IPaginate> {
     return this.customerService.findAll(payload);
   }
 

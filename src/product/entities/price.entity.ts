@@ -14,6 +14,11 @@ export class Price {
   unitId: string;
 
   @Column({
+    default: 0,
+  })
+  isBaseUnit: boolean;
+
+  @Column({
     type: 'int',
     default: 1,
   })

@@ -1,6 +1,7 @@
+import { paginateResponse } from 'src/utils/hellper';
 import { Repository } from 'typeorm';
 import { randomNumber } from './../utils/hellper';
-import { IResponse } from './../utils/interfaces/response.interface';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { FindEmployeeDto } from './dto/find-employee.dto';
 import { Inject, Injectable, HttpStatus } from '@nestjs/common';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
@@ -14,15 +15,14 @@ export class EmployeeService {
     private readonly repository: Repository<Employee>,
   ) {}
 
-  async findAll(payload: FindEmployeeDto): Promise<IResponse> {
+  async findAll(payload: FindEmployeeDto): Promise<IResponse | IPaginate> {
     try {
       const { offset, limit } = payload;
-      const employees = await this.repository.find({
+      const employees = await this.repository.findAndCount({
         ...(limit && { take: limit }),
-        ...(offset && { skip: offset }),
+        ...(offset && { skip: (offset - 1) * limit }),
       });
-
-      return { data: employees, error: null, status: HttpStatus.OK };
+      return paginateResponse(employees, offset, limit, null, HttpStatus.OK);
     } catch (error) {
       return {
         message: 'Unable to get employee',

@@ -9,13 +9,12 @@ import {
   Query,
   UseGuards,
   Put,
-  Logger,
 } from '@nestjs/common';
 import { PermissionAction } from 'src/auth/casl.ability.factory';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CheckPermissions } from 'src/auth/permission.decorator';
 import { PermissionsGuard } from 'src/auth/permission.guard';
-import { IResponse } from 'src/utils/interfaces/response.interface';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { FindOrderDto, CreateOrderDto, UpdateOrderDto } from './order.dto';
 import { OrderService } from './order.service';
 
@@ -26,10 +25,7 @@ export class OrderController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.READ, 'Order'])
   @Get()
-  findAll(@Query() payload: FindOrderDto): Promise<IResponse> {
-    Logger.debug(
-      `offset: ${payload.offset}, limit: ${payload.limit}, withDeleted: ${payload.withDeleted}`,
-    );
+  findAll(@Query() payload: FindOrderDto): Promise<IResponse | IPaginate> {
     return this.service.findAll(payload);
   }
 

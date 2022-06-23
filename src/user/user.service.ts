@@ -1,10 +1,11 @@
+import { paginateResponse } from 'src/utils/hellper';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { IResponse } from '../utils/interfaces/response.interface';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindUserDto } from './dto/find-user.dto';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
 
 @Injectable()
 export class UserService {
@@ -13,21 +14,17 @@ export class UserService {
     private readonly repository: Repository<User>,
   ) {}
 
-  async findAll(payload: FindUserDto): Promise<IResponse> {
+  async findAll(payload: FindUserDto): Promise<IResponse | IPaginate> {
     try {
       const { offset, limit } = payload;
-      const user = await this.repository.find({
+      const user = await this.repository.findAndCount({
         relations: {
           role: true,
         },
         ...(limit && { take: limit }),
-        ...(offset && { skip: offset }),
+        ...(offset && { skip: (offset - 1) * limit }),
       });
-      return {
-        data: user,
-        error: null,
-        status: HttpStatus.OK,
-      };
+      return paginateResponse(user, offset, limit, null, HttpStatus.OK);
     } catch (error) {
       return {
         message: 'Unable to get user',

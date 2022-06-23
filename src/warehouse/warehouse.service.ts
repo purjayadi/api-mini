@@ -1,10 +1,11 @@
+import { paginateResponse } from 'src/utils/hellper';
 import { Repository } from 'typeorm';
 import { FindDto } from './../utils/dto/find.dto';
-import { IResponse } from '../utils/interfaces/response.interface';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { UpdateWarehouseDto } from './dto/update-warehouse.dto';
 import { Warehouse } from './entities/warehouse.entity';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
 
 @Injectable()
 export class WarehouseService {
@@ -13,18 +14,14 @@ export class WarehouseService {
     private readonly repository: Repository<Warehouse>,
   ) {}
 
-  async findAll(payload: FindDto): Promise<IResponse> {
+  async findAll(payload: FindDto): Promise<IResponse | IPaginate> {
     try {
       const { offset, limit } = payload;
-      const warehouses = await this.repository.find({
+      const warehouses = await this.repository.findAndCount({
         ...(limit && { take: limit }),
-        ...(offset && { skip: offset }),
+        ...(offset && { skip: (offset - 1) * limit }),
       });
-      return {
-        data: warehouses,
-        error: null,
-        status: HttpStatus.OK,
-      };
+      return paginateResponse(warehouses, offset, limit, null, HttpStatus.OK);
     } catch (error) {
       return {
         message: 'Unable to get warehouse',

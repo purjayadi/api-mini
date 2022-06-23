@@ -1,4 +1,4 @@
-import { IResponse } from '../utils/interfaces/response.interface';
+import { IResponse, IPaginate } from '../interface/response.interface';
 import {
   Controller,
   Get,
@@ -33,7 +33,7 @@ export class SupplierController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.READ, 'Supplier'])
   @Get()
-  findAll(@Query() payload: FindSupplierDto): Promise<IResponse> {
+  findAll(@Query() payload: FindSupplierDto): Promise<IResponse | IPaginate> {
     return this.supplierService.findAll(payload);
   }
 

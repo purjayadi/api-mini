@@ -1,4 +1,4 @@
-import { IResponse } from '../utils/interfaces/response.interface';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
 import {
   Controller,
   Get,
@@ -33,7 +33,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.READ, 'User'])
   @Get()
-  findAll(@Query() payload: FindUserDto): Promise<IResponse> {
+  findAll(@Query() payload: FindUserDto): Promise<IResponse | IPaginate> {
     return this.userService.findAll(payload);
   }
 

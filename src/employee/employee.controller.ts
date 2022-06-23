@@ -1,7 +1,7 @@
 import { PermissionAction } from './../auth/casl.ability.factory';
 import { PermissionsGuard } from './../auth/permission.guard';
 import { JwtAuthGuard } from './../auth/jwt-auth.guard';
-import { IResponse } from './../utils/interfaces/response.interface';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
 import {
   Controller,
   Get,
@@ -26,7 +26,7 @@ export class EmployeeController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.READ, 'Employee'])
   @Get()
-  findAll(@Query() payload: FindEmployeeDto): Promise<IResponse> {
+  findAll(@Query() payload: FindEmployeeDto): Promise<IResponse | IPaginate> {
     return this.service.findAll(payload);
   }
 

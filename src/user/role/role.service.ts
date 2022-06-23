@@ -1,6 +1,7 @@
+import { paginateResponse } from 'src/utils/hellper';
 import { Repository } from 'typeorm';
-import { IResponse } from '../../utils/interfaces/response.interface';
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { AssignPermission } from '../dto/role.dto';
 import { Role } from '../entities/role.entity';
 import { RolePermission } from '../entities/rolePermission.entity';
@@ -15,15 +16,15 @@ export class RoleService {
     private readonly rolePermission: Repository<RolePermission>,
   ) {}
 
-  async findAll(payload: any) {
+  async findAll(payload: any): Promise<IResponse | IPaginate> {
     try {
       const { offset, limit } = payload;
-      const role = await this.repository.find({
+      const role = await this.repository.findAndCount({
         ...(limit && { take: limit }),
-        ...(offset && { skip: offset }),
+        ...(offset && { skip: (offset - 1) * limit }),
       });
 
-      return { data: role, error: null, status: HttpStatus.OK };
+      return paginateResponse(role, offset, limit, null, HttpStatus.OK);
     } catch (error) {
       return {
         message: 'Unable to get role',

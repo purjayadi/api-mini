@@ -1,7 +1,8 @@
+import { paginateResponse } from 'src/utils/hellper';
 import { Schedule } from './entities/schedule.entity';
 import { Repository } from 'typeorm';
 import { randomNumber } from './../utils/hellper';
-import { IResponse } from '../utils/interfaces/response.interface';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import {
   CreateScheduleDto,
@@ -16,14 +17,14 @@ export class ScheduleService {
     private readonly repository: Repository<Schedule>,
   ) {}
 
-  async findAll(payload: findScheduleDto): Promise<IResponse> {
+  async findAll(payload: findScheduleDto): Promise<IResponse | IPaginate> {
     try {
       const { offset, limit } = payload;
-      const schedule = await this.repository.find({
+      const schedule = await this.repository.findAndCount({
         ...(limit && { take: limit }),
-        ...(offset && { skip: offset }),
+        ...(offset && { skip: (offset - 1) * limit }),
       });
-      return { data: schedule, error: null, status: HttpStatus.OK };
+      return paginateResponse(schedule, offset, limit, null, HttpStatus.OK);
     } catch (error) {
       return {
         message: 'Unable to get schedules',

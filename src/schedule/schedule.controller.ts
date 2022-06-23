@@ -1,5 +1,5 @@
 import { ScheduleService } from './schedule.service';
-import { IResponse } from '../utils/interfaces/response.interface';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
 import {
   Controller,
   Get,
@@ -35,7 +35,7 @@ export class ScheduleController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.READ, 'Schedule'])
   @Get()
-  findAll(@Query() payload: findScheduleDto): Promise<IResponse> {
+  findAll(@Query() payload: findScheduleDto): Promise<IResponse | IPaginate> {
     return this.service.findAll(payload);
   }
 
