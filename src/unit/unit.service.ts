@@ -31,7 +31,7 @@ export class UnitService {
 
   async create(payload: CreateUnitDto): Promise<IResponse> {
     try {
-      await this.repository.create({
+      await this.repository.save({
         ...payload,
       });
       return {
