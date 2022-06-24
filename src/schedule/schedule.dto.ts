@@ -1,20 +1,28 @@
 import { Optional } from '@nestjs/common';
 import { PartialType } from '@nestjs/mapped-types';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDateString,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
+  Min,
 } from 'class-validator';
 import { StatusFormat } from './entities/schedule.entity';
 
 export class findScheduleDto {
-  @Optional()
-  readonly offset?: number;
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  public readonly limit: number;
 
-  @Optional()
-  readonly limit?: number;
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
+  public readonly offset: number;
 
   @Optional()
   readonly query?: string;

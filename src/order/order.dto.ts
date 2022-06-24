@@ -1,4 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { Type } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
@@ -6,15 +7,21 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Min,
   ValidateIf,
 } from 'class-validator';
 import { PaymentMethod } from './entities/order.entity';
 
 export class FindOrderDto {
   @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
   public readonly limit: number;
 
   @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
   public readonly offset: number;
 
   @IsString()
