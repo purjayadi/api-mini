@@ -149,8 +149,27 @@ export class OrderService {
           Logger.log(`Increase stock success ${quantity}`);
         }
       });
-      const updateOrder = await this.repository.preload({ ...payload, id: id });
-      await this.repository.save(updateOrder);
+      const newOrder = {
+        date: payload.date,
+        customerId: payload.customerId,
+        employeeId: payload.employeeId,
+        total: payload.total,
+        paymentMethod: payload.paymentMethod,
+      };
+      const newOrderDetail = [];
+      payload.orderDetails?.map(async (detail) => {
+        newOrderDetail.push({
+          orderId: id,
+          productId: detail.productId,
+          price: detail.price,
+          quantity: detail.quantity,
+          unitId: detail.unitId,
+          subTotal: detail.subTotal,
+        });
+      });
+      await this.orderDetail.delete({ orderId: id });
+      await this.orderDetail.save(newOrderDetail);
+      await this.repository.update(id, newOrder);
       payload.orderDetails.map(async (detail) => {
         const productValue = await this.product.findValueProductByUnit(
           detail.productId,

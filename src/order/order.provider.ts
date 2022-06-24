@@ -1,4 +1,4 @@
-import { OrderDetail } from './order.dto';
+import { OrderDetail } from './entities/orderDetail.entity';
 import { DataSource } from 'typeorm';
 import { Order } from './entities/order.entity';
 
