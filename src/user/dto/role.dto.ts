@@ -1,9 +1,12 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateRoleDto {
   @IsString()
   @IsNotEmpty()
   public readonly name: string;
+
+  @IsOptional()
+  public readonly permissions: any;
 }
 
 export class AssignPermission {

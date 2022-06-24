@@ -19,6 +19,7 @@ export class Role {
   @OneToMany(() => RolePermission, (rp) => rp.role, {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
+    cascade: true,
     eager: true,
   })
   rolePermissions: RolePermission[];

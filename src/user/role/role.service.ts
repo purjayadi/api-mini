@@ -36,9 +36,12 @@ export class RoleService {
 
   async create(payload: any) {
     try {
-      await this.repository.save({
+      const data = {
         ...payload,
-      });
+        rolePermissions: payload.permissions,
+      };
+      // Logger.debug(data);
+      await this.repository.save(data);
       return {
         message: 'Create role successfully',
         error: null,
@@ -83,7 +86,13 @@ export class RoleService {
           status: HttpStatus.NOT_FOUND,
         };
       }
-      await this.repository.update(id, payload);
+      const data = {
+        ...payload,
+        id: id,
+        rolePermissions: payload.permissions,
+      };
+      const updatedRole = this.repository.preload(data);
+      await this.repository.save(await updatedRole);
       return {
         message: 'Update role successfully',
         error: null,
