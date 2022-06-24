@@ -1,5 +1,5 @@
 import { paginateResponse } from 'src/utils/hellper';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { AssignPermission } from '../dto/role.dto';
@@ -14,6 +14,7 @@ export class RoleService {
 
     @Inject('ROLE_PERMISSION_REPOSITORY')
     private readonly rolePermission: Repository<RolePermission>,
+    @Inject('DATA_SOURCE') private readonly connection: DataSource,
   ) {}
 
   async findAll(payload: any): Promise<IResponse | IPaginate> {
@@ -77,6 +78,8 @@ export class RoleService {
   }
 
   async update(id: string, payload: any) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.startTransaction();
     try {
       const role = await this.repository.findOneBy({ id });
       if (!role) {
@@ -86,19 +89,28 @@ export class RoleService {
           status: HttpStatus.NOT_FOUND,
         };
       }
+      const rolePermissions = [];
+      if (payload.permissions.length) {
+        payload.permissions.forEach((permission) => {
+          rolePermissions.push({
+            roleId: role.id,
+            permissionId: permission.permissionId,
+          });
+        });
+      }
       const data = {
-        ...payload,
-        id: id,
-        rolePermissions: payload.permissions,
+        name: payload.name,
       };
-      const updatedRole = this.repository.preload(data);
-      await this.repository.save(await updatedRole);
+      await this.rolePermission.delete({ roleId: id });
+      await this.repository.update(id, data);
+      await this.rolePermission.save(rolePermissions);
       return {
         message: 'Update role successfully',
         error: null,
         status: HttpStatus.OK,
       };
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       return {
         message: 'Unable to update role',
         error: error.message,
