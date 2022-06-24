@@ -1,4 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDateString,
@@ -7,6 +8,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Min,
 } from 'class-validator';
 import { StatusFormat } from './entities/purchase.entity';
 
@@ -78,9 +80,14 @@ export class UpdatePurchaseDto extends PartialType(CreatePurchaseDto) {}
 
 export class FindPurchaseDto {
   @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
   public readonly limit: number;
 
   @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
   public readonly offset: number;
 
   @IsString()

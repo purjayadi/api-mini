@@ -1,10 +1,16 @@
-import { IsInt, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class FindEmployeeDto {
   @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
   public readonly limit: number;
 
   @IsOptional()
+  @IsNumber()
+  @Min(1)
+  @Type(() => Number)
   public readonly offset: number;
 
   @IsString()
