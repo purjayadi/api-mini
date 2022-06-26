@@ -5,7 +5,7 @@ import { APIPrefix } from './utils/common';
 import helmet from 'helmet';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { logger: console });
 
   app.setGlobalPrefix(APIPrefix.Version);
   app.use(helmet());

@@ -15,6 +15,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Price } from './price.entity';
+import { ReturPurchaseDetail } from 'src/returPurchase/entities/returPurchaseDetail.entity';
 
 @Entity()
 export class Product extends BaseColumn {
@@ -66,4 +67,7 @@ export class Product extends BaseColumn {
 
   @OneToOne(() => Stock, (s) => s.product)
   stock: Stock;
+
+  @OneToOne(() => ReturPurchaseDetail, (rpd) => rpd.product)
+  returPurchaseDetails: ReturPurchaseDetail[];
 }

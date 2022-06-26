@@ -73,7 +73,7 @@ export default class ResourceSeeder implements Seeder {
     const resources = await repository.find();
     actions.map((action) => {
       resources.map((resource) => {
-        permission.insert({
+        permission.save({
           action: action.name,
           resource,
         });

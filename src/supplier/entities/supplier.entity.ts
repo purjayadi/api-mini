@@ -3,6 +3,7 @@ import { Product } from './../../product/entities/product.entity';
 import { BaseColumn } from 'src/utils/base.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { SupplierBankAccount } from '../../supplierAccount/entities/supplierBankAccount.entity';
+import { ReturPurchase } from 'src/returPurchase/entities/returPurchase.entity';
 
 @Entity()
 export class Supplier extends BaseColumn {
@@ -41,4 +42,9 @@ export class Supplier extends BaseColumn {
     onUpdate: 'CASCADE',
   })
   purchases: PurchaseOrder[];
+
+  @OneToMany(() => ReturPurchase, (rp) => rp.supplier, {
+    onUpdate: 'CASCADE',
+  })
+  returPurchases: ReturPurchase[];
 }

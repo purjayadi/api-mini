@@ -20,6 +20,7 @@ import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './user/role/role.module';
 import { PermissionModule } from './user/permission/permission.module';
 import { ResourceModule } from './user/resource/resource.module';
+import { ReturPurchaseModule } from './returPurchase/returPurchase.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { ResourceModule } from './user/resource/resource.module';
     RoleModule,
     PermissionModule,
     RolePermissionModule,
+    ReturPurchaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
