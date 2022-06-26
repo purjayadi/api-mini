@@ -1,3 +1,4 @@
+import { ReturOrderDetail } from './../../returOrder/entities/returOrderDetail.entity';
 import { Stock } from './../../stock/entities/stock.entity';
 import { OrderDetail } from './../../order/entities/orderDetail.entity';
 import { ScheduleDetail } from './../../schedule/entities/scheduleDetail.entity';
@@ -70,4 +71,7 @@ export class Product extends BaseColumn {
 
   @OneToOne(() => ReturPurchaseDetail, (rpd) => rpd.product)
   returPurchaseDetails: ReturPurchaseDetail[];
+
+  @OneToOne(() => ReturOrderDetail, (rpd) => rpd.product)
+  returOrderDetails: ReturOrderDetail[];
 }
