@@ -1,3 +1,4 @@
+import { ReturOrder } from './../../returOrder/entities/returOrder.entity';
 import { Order } from './../../order/entities/order.entity';
 import { Schedule } from './../../schedule/entities/schedule.entity';
 import { Employee } from './../../employee/entities/employee.entity';
@@ -95,4 +96,9 @@ export class Customer extends BaseColumn {
 
   @OneToMany(() => Order, (o) => o.customer)
   orders: Order[];
+
+  @OneToMany(() => ReturOrder, (rp) => rp.customer, {
+    onUpdate: 'CASCADE',
+  })
+  returOrders: ReturOrder[];
 }
