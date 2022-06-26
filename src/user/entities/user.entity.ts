@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { Role } from './role.entity';
 import * as bcrypt from 'bcrypt';
+import { ReturPurchase } from 'src/returPurchase/entities/returPurchase.entity';
 
 @Entity()
 export class User extends BaseColumn {
@@ -29,7 +30,7 @@ export class User extends BaseColumn {
 
   @Column({
     select: false,
-    nullable: true
+    nullable: true,
   })
   employeeId: string;
 
@@ -71,4 +72,9 @@ export class User extends BaseColumn {
   async validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
   }
+
+  @OneToMany(() => ReturPurchase, (rp) => rp.user, {
+    onUpdate: 'CASCADE',
+  })
+  returPurchases: ReturPurchase[];
 }

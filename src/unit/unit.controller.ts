@@ -21,36 +21,36 @@ import { PermissionsGuard } from 'src/auth/permission.guard';
 export class UnitController {
   constructor(private readonly service: UnitService) {}
 
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @CheckPermissions([PermissionAction.CREATE, 'Unit'])
+  // @UseGuards(JwtAuthGuard, PermissionsGuard)
+  // @CheckPermissions([PermissionAction.CREATE, 'Unit'])
   @Post()
   create(@Body() payload: CreateUnitDto) {
     return this.service.create(payload);
   }
 
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @CheckPermissions([PermissionAction.READ, 'Unit'])
+  // @UseGuards(JwtAuthGuard, PermissionsGuard)
+  // @CheckPermissions([PermissionAction.READ, 'Unit'])
   @Get()
   findAll(@Query() payload: FindUnitDto): Promise<IResponse | IPaginate> {
     return this.service.findAll(payload);
   }
 
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @CheckPermissions([PermissionAction.READ, 'Unit'])
+  // @UseGuards(JwtAuthGuard, PermissionsGuard)
+  // @CheckPermissions([PermissionAction.READ, 'Unit'])
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @CheckPermissions([PermissionAction.UPDATE, 'Unit'])
+  // @UseGuards(JwtAuthGuard, PermissionsGuard)
+  // @CheckPermissions([PermissionAction.UPDATE, 'Unit'])
   @Patch(':id')
   update(@Param('id') id: string, @Body() payload: Partial<CreateUnitDto>) {
     return this.service.update(id, payload);
   }
 
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @CheckPermissions([PermissionAction.DELETE, 'Unit'])
+  // @UseGuards(JwtAuthGuard, PermissionsGuard)
+  // @CheckPermissions([PermissionAction.DELETE, 'Unit'])
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.service.remove(id);
