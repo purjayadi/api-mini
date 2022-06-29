@@ -17,7 +17,7 @@ export class UnitService {
       const { offset, limit } = payload;
       const Units = await this.repository.findAndCount({
         ...(limit && { take: limit }),
-        ...(offset && { skip: offset }),
+        ...(offset && { skip: (offset - 1) * limit }),
       });
       return paginateResponse(Units, offset, limit, null, HttpStatus.OK);
     } catch (error) {
