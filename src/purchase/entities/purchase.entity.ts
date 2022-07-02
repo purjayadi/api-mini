@@ -55,9 +55,7 @@ export class PurchaseOrder extends BaseColumn {
   @Column()
   warehouseId: string;
 
-  @ManyToOne(() => User, (u) => u.purchases, {
-    eager: true,
-  })
+  @ManyToOne(() => User, (u) => u.purchases)
   user: User;
 
   @ManyToOne(() => Supplier, (s) => s.purchases, {
