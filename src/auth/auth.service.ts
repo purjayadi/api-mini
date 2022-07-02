@@ -28,6 +28,7 @@ export class AuthService {
     return {
       message: 'Login successfully',
       access_token: token,
+      data: user,
       error: null,
       status: HttpStatus.OK,
     };
