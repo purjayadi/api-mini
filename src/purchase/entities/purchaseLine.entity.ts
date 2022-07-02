@@ -31,7 +31,9 @@ export class PurchaseOrderLine extends BaseColumn {
   })
   subTotal: number;
 
-  @ManyToOne(() => PurchaseOrder, (po) => po.purchaseLines)
+  @ManyToOne(() => PurchaseOrder, (po) => po.purchaseLines, {
+    onDelete: 'CASCADE',
+  })
   purchaseOrder: PurchaseOrder;
 
   @ManyToOne(() => Product, (p) => p.purchaseLines, {

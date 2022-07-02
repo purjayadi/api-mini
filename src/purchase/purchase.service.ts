@@ -1,16 +1,24 @@
+import { Stock } from './../stock/entities/stock.entity';
 import { paginateResponse } from 'src/utils/hellper';
 import { ProductService } from './../product/product.service';
 import { StockService } from './../stock/stock.service';
-import { randomNumber } from './../utils/hellper';
 import { PurchaseOrder } from './entities/purchase.entity';
-import { Repository } from 'typeorm';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   CreatePurchaseDto,
   FindPurchaseDto,
   UpdatePurchaseDto,
 } from './purchase.dto';
 import { IPaginate, IResponse } from '../interface/response.interface';
+import { PurchaseOrderLine } from './entities/purchaseLine.entity';
 
 @Injectable()
 export class PurchaseService {
@@ -20,17 +28,28 @@ export class PurchaseService {
     private readonly stock: StockService,
     private readonly product: ProductService,
     @Inject('PURCHASE_ORDER_LINE_REPOSITORY')
-    private readonly pol: Repository<PurchaseOrder>,
+    private readonly purchaseLine: Repository<PurchaseOrderLine>,
+    @Inject('STOCK_REPOSITORY')
+    private readonly stockRepository: Repository<Stock>,
+    @Inject('DATA_SOURCE') private readonly connection: DataSource,
   ) {}
 
   async create(payload: CreatePurchaseDto): Promise<IResponse> {
     try {
-      const count = await this.repository.count();
-      const number = randomNumber(10000, 99999);
-      const code = 'INP-' + (count + number + 1);
+      const data = await this.repository.find({
+        order: { code: 'DESC' },
+        take: 1,
+        skip: 0,
+        withDeleted: true,
+      });
+      const lastInvoice =
+        data.length > 0
+          ? (data[0].code.replace(/^\D+/g, '') as unknown as number)
+          : 1000;
+      const invNumber = 'INP-' + (Number(lastInvoice) + 1);
       const purchase = await this.repository.save({
         ...payload,
-        code: code,
+        code: invNumber,
       });
       if (purchase) {
         payload.purchaseLines.map(async (line) => {
@@ -48,11 +67,10 @@ export class PurchaseService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to create purchase order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -71,49 +89,103 @@ export class PurchaseService {
         HttpStatus.OK,
       );
     } catch (error) {
-      return {
-        message: 'Unable to get purchase order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   async findOne(id: string): Promise<IResponse> {
     try {
       const purchaseOrder = await this.repository.findOneBy({ id });
+      if (!purchaseOrder) {
+        throw new NotFoundException('Purchase Order Not Found');
+      }
       return { data: purchaseOrder, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return {
-        message: 'Unable to get purchase order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   async update(id: string, payload: UpdatePurchaseDto): Promise<IResponse> {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.startTransaction();
     try {
       const purchaseOrder = await this.repository.findOneBy({ id });
       if (!purchaseOrder) {
-        return {
-          message: 'Purchase order not Found',
-          error: null,
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Purchase Order Not Found');
       }
-      await this.repository.update(id, payload);
+      purchaseOrder.purchaseLines.map(async (detail) => {
+        const productValue = await this.product.findValueProductByUnit(
+          detail.productId,
+          detail.unitId,
+        );
+        const stock = await this.stock.findOne(detail.productId);
+        if (stock) {
+          const quantity = productValue.value * detail.quantity;
+          await this.stockRepository.decrement(
+            { productId: detail.productId },
+            'quantity',
+            quantity,
+          );
+          Logger.log(`Decrement stock success ${quantity}`);
+        }
+      });
+      const newPurchase = {
+        date: payload.date,
+        discount: payload.discount,
+        total: payload.total,
+        supplierId: payload.supplierId,
+        userId: payload.userId,
+        warehouseId: payload.warehouseId,
+      };
+
+      const purchaseLines = [];
+      payload.purchaseLines.map(async (line) => {
+        purchaseLines.push({
+          purchaseOrderId: id,
+          productId: line.productId,
+          unitId: line.unitId,
+          quantity: line.quantity,
+          price: line.price,
+          subTotal: line.subTotal,
+        });
+      });
+      await this.purchaseLine.delete({ purchaseOrderId: id });
+      await this.purchaseLine.save(purchaseLines);
+      await this.repository.update(id, newPurchase);
+      payload.purchaseLines.map(async (detail) => {
+        const productValue = await this.product.findValueProductByUnit(
+          detail.productId,
+          detail.unitId,
+        );
+        const stock = await this.stock.findOne(detail.productId);
+        if (stock) {
+          const quantity = productValue.value * detail.quantity;
+          await this.stockRepository.increment(
+            { productId: detail.productId },
+            'quantity',
+            quantity,
+          );
+          Logger.log(`Increase stock success ${quantity}`);
+        }
+      });
+      await queryRunner.commitTransaction();
       return {
         message: 'Update purchase order successfully',
         error: null,
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to update purchase order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      await queryRunner.rollbackTransaction();
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -121,24 +193,30 @@ export class PurchaseService {
     try {
       const purchaseOrder = await this.repository.findOneBy({ id });
       if (!purchaseOrder) {
-        return {
-          message: 'Purchase order not Found',
-          error: null,
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Purchase Order Not Found');
       }
-      await this.repository.delete(id);
+      purchaseOrder.purchaseLines.map(async (detail) => {
+        const productValue = await this.product.findValueProductByUnit(
+          detail.productId,
+          detail.unitId,
+        );
+        const quantity = productValue.value * detail.quantity;
+        const increment = this.stock.decrement(detail.productId, quantity);
+        Logger.log(`Decrement stock success ${quantity}`);
+        if (increment) {
+          await this.repository.delete({ id });
+        }
+      });
       return {
         message: 'Remove purchase order successfully',
         error: null,
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to remove purchase order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
