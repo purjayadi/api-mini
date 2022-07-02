@@ -37,6 +37,7 @@ export class ReturPurchaseService {
           user: {
             role: false,
           },
+          supplier: {},
           returPurchaseDetails: {
             product: {
               prices: false,
