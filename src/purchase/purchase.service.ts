@@ -80,6 +80,14 @@ export class PurchaseService {
       const purchaseOrders = await this.repository.findAndCount({
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
+        relations: {
+          user: {
+            role: false,
+          },
+          supplier: {
+            supplierBankAccount: false,
+          },
+        },
       });
       return paginateResponse(
         purchaseOrders,
@@ -98,7 +106,19 @@ export class PurchaseService {
 
   async findOne(id: string): Promise<IResponse> {
     try {
-      const purchaseOrder = await this.repository.findOneBy({ id });
+      const purchaseOrder = await this.repository.findOne({
+        where: {
+          id: id,
+        },
+        relations: {
+          user: {
+            role: false,
+          },
+          supplier: {
+            supplierBankAccount: false,
+          },
+        },
+      });
       if (!purchaseOrder) {
         throw new NotFoundException('Purchase Order Not Found');
       }
