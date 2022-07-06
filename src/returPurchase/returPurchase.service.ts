@@ -9,7 +9,14 @@ import { ReturPurchase } from './entities/returPurchase.entity';
 import { StockService } from './../stock/stock.service';
 import { Repository, DataSource } from 'typeorm';
 import { paginateResponse } from './../utils/hellper';
-import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import { IPaginate, IResponse } from '../interface/response.interface';
 import { ReturPurchaseDetail } from './entities/returPurchaseDetail.entity';
 
@@ -52,11 +59,10 @@ export class ReturPurchaseService {
         HttpStatus.OK,
       );
     } catch (error) {
-      return {
-        message: 'Unable to get retur purchases',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -85,11 +91,10 @@ export class ReturPurchaseService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to create retur purchase',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -97,19 +102,14 @@ export class ReturPurchaseService {
     try {
       const returPurchase = await this.repository.findOneBy({ id });
       if (!returPurchase) {
-        return {
-          message: 'Product not Found',
-          error: null,
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Data Not Found');
       }
       return { data: returPurchase, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return {
-        message: 'Unable to get retur purchase',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -122,11 +122,7 @@ export class ReturPurchaseService {
     try {
       const returPurchase = await this.repository.findOneBy({ id });
       if (!returPurchase) {
-        return {
-          data: null,
-          error: ['Data not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Data Not Found');
       }
       returPurchase.returPurchaseDetails.map(async (detail) => {
         const productValue = await this.product.findValueProductByUnit(
@@ -183,11 +179,10 @@ export class ReturPurchaseService {
       };
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      return {
-        message: 'Unable to update data',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -195,11 +190,7 @@ export class ReturPurchaseService {
     try {
       const returPurchase = await this.repository.findOneBy({ id });
       if (!returPurchase) {
-        return {
-          data: null,
-          error: ['Retur purchase not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Data Not Found');
       }
       const returDelete = await this.repository.delete(id);
       if (returDelete) {
@@ -218,11 +209,10 @@ export class ReturPurchaseService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to delete retur purchase',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

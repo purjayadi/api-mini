@@ -1,7 +1,13 @@
 import { StockService } from './../stock/stock.service';
 import { Repository } from 'typeorm';
 import { paginateResponse, randomNumber } from './../utils/hellper';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FindProductDto } from './dto/find-product.dto';
@@ -30,11 +36,10 @@ export class ProductService {
       });
       return paginateResponse(Products, offset, limit, null, HttpStatus.OK);
     } catch (error) {
-      return {
-        message: 'Unable to get Product',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -57,11 +62,10 @@ export class ProductService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to create Product',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -69,19 +73,14 @@ export class ProductService {
     try {
       const Product = await this.repository.findOneBy({ id });
       if (!Product) {
-        return {
-          message: 'Product not Found',
-          error: null,
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Product not found');
       }
       return { data: Product, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return {
-        message: 'Unable to get Product',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -89,11 +88,7 @@ export class ProductService {
     try {
       const Product = await this.repository.findOneBy({ id });
       if (!Product) {
-        return {
-          data: null,
-          error: ['Product not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Product not found');
       }
       const newPayload = {
         ...payload,
@@ -107,11 +102,10 @@ export class ProductService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to update Product',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -119,11 +113,7 @@ export class ProductService {
     try {
       const Product = await this.repository.findOneBy({ id });
       if (!Product) {
-        return {
-          data: null,
-          error: ['Product not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Product not found');
       }
       await this.repository.delete(id);
       return {
@@ -132,11 +122,10 @@ export class ProductService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to delete Product',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 

@@ -1,6 +1,12 @@
 import { IResponse } from 'src/utils/interfaces/response.interface';
 import { Repository } from 'typeorm';
-import { Inject, Injectable, HttpStatus, Logger } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  HttpStatus,
+  Logger,
+  HttpException,
+} from '@nestjs/common';
 import { Stock } from './entities/stock.entity';
 
 @Injectable()
@@ -23,11 +29,7 @@ export class StockService {
 
       return { data: Products, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return {
-        message: 'Unable to get stock',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
