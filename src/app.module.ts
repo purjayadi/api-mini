@@ -22,6 +22,7 @@ import { PermissionModule } from './user/permission/permission.module';
 import { ResourceModule } from './user/resource/resource.module';
 import { ReturPurchaseModule } from './returPurchase/returPurchase.module';
 import { ReturOrderModule } from './returOrder/returOrder.module';
+import { PiutangModule } from './piutang/piutang.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { ReturOrderModule } from './returOrder/returOrder.module';
     RolePermissionModule,
     ReturPurchaseModule,
     ReturOrderModule,
+    PiutangModule,
   ],
   controllers: [AppController],
   providers: [AppService],
