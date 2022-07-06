@@ -1,6 +1,13 @@
 import { paginateResponse } from 'src/utils/hellper';
 import { DataSource, Repository } from 'typeorm';
-import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { AssignPermission } from '../dto/role.dto';
 import { Role } from '../entities/role.entity';
@@ -27,11 +34,7 @@ export class RoleService {
 
       return paginateResponse(role, offset, limit, null, HttpStatus.OK);
     } catch (error) {
-      return {
-        message: 'Unable to get role',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -49,11 +52,7 @@ export class RoleService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to create role',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -61,19 +60,14 @@ export class RoleService {
     try {
       const user = await this.repository.findOneBy({ id });
       if (!user) {
-        return {
-          message: 'User not Found',
-          error: null,
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Role not found');
       }
       return { data: user, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return {
-        message: 'Unable to get user',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -83,11 +77,7 @@ export class RoleService {
     try {
       const role = await this.repository.findOneBy({ id });
       if (!role) {
-        return {
-          data: null,
-          error: ['Role not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Role not found');
       }
       const rolePermissions = [];
       if (payload.permissions.length) {
@@ -111,11 +101,10 @@ export class RoleService {
       };
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      return {
-        message: 'Unable to update role',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -123,11 +112,7 @@ export class RoleService {
     try {
       const role = await this.repository.findOneBy({ id });
       if (!role) {
-        return {
-          data: null,
-          error: ['Role not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Role not found');
       }
       await this.repository.delete(id);
       return {
@@ -136,11 +121,10 @@ export class RoleService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to delete role',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -151,11 +135,7 @@ export class RoleService {
     try {
       const role = await this.repository.findOneBy({ id });
       if (!role) {
-        return {
-          data: null,
-          error: ['Role not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Role not found');
       }
       const data = [];
       Logger.debug(payload.permissions);
@@ -175,11 +155,10 @@ export class RoleService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to assign permission',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

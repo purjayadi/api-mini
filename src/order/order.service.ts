@@ -4,7 +4,14 @@ import { ProductService } from './../product/product.service';
 import { StockService } from './../stock/stock.service';
 import { Repository, Like, DataSource } from 'typeorm';
 import { Order } from './entities/order.entity';
-import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateOrderDto, FindOrderDto, UpdateOrderDto } from './order.dto';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { paginateResponse } from 'src/utils/hellper';
@@ -49,16 +56,15 @@ export class OrderService {
       });
       return paginateResponse(orders, offset, limit, null, HttpStatus.OK);
     } catch (error) {
-      return {
-        message: 'Unable to get orders',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   async create(payload: CreateOrderDto): Promise<IResponse> {
-    const queryRunner = await this.connection.createQueryRunner();
+    const queryRunner = this.connection.createQueryRunner();
     await queryRunner.startTransaction();
     try {
       const data = await this.repository.find({
@@ -94,11 +100,10 @@ export class OrderService {
       };
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      return {
-        message: 'Unable to create order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        'Unable to create order',
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     } finally {
       await queryRunner.release();
     }
@@ -108,19 +113,14 @@ export class OrderService {
     try {
       const order = await this.repository.findOneBy({ id });
       if (!order) {
-        return {
-          message: 'Order not Found',
-          error: null,
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Order Not Found');
       }
       return { data: order, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return {
-        message: 'Unable to get order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -130,11 +130,7 @@ export class OrderService {
     try {
       const order = await this.repository.findOneBy({ id });
       if (!order) {
-        return {
-          data: null,
-          error: ['Order not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Order Not Found');
       }
       order.orderDetails.map(async (detail) => {
         const productValue = await this.product.findValueProductByUnit(
@@ -192,11 +188,10 @@ export class OrderService {
       };
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      return {
-        message: 'Unable to update order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     } finally {
       await queryRunner.release();
     }
@@ -206,11 +201,7 @@ export class OrderService {
     try {
       const order = await this.repository.findOneBy({ id });
       if (!order) {
-        return {
-          data: null,
-          error: ['Order not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Order Not Found');
       }
       if (order) {
         order.orderDetails.map(async (detail) => {
@@ -231,11 +222,10 @@ export class OrderService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to delete order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -243,11 +233,7 @@ export class OrderService {
     try {
       const order = await this.repository.findOneBy({ id });
       if (!order) {
-        return {
-          data: null,
-          error: ['Order not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Order Not Found');
       }
       if (order) {
         order.orderDetails.map(async (detail) => {
@@ -268,11 +254,10 @@ export class OrderService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to delete order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -283,11 +268,7 @@ export class OrderService {
         withDeleted: true,
       });
       if (!order) {
-        return {
-          data: null,
-          error: ['Order not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Order Not Found');
       }
       if (order) {
         order.orderDetails.map(async (detail) => {
@@ -308,11 +289,10 @@ export class OrderService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to restore order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

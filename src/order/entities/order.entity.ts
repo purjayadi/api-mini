@@ -7,9 +7,11 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OrderDetail } from './orderDetail.entity';
+import { Piutang } from 'src/piutang/entities/piutang.entity';
 
 export enum PaymentMethod {
   CASH = 'Cash',
@@ -95,6 +97,13 @@ export class Order extends BaseColumn {
     eager: true,
   })
   employee: Employee;
+
+  @OneToOne(() => Piutang, (piutang) => piutang.order, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    cascade: true,
+  })
+  piutang: Piutang;
 
   @AfterSoftRemove()
   updateStatus() {

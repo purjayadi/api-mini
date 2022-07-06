@@ -59,7 +59,7 @@ export class PurchaseOrder extends BaseColumn {
   user: User;
 
   @ManyToOne(() => Supplier, (s) => s.purchases, {
-    eager: true,
+    // eager: true,
   })
   supplier: Supplier;
 

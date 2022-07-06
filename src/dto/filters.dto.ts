@@ -30,4 +30,7 @@ export class FilterDto {
 
   @IsOptional()
   public readonly order: string;
+
+  @IsOptional()
+  public readonly dueDate: Date;
 }

@@ -1,7 +1,13 @@
 import { paginateResponse } from 'src/utils/hellper';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindUserDto } from './dto/find-user.dto';
@@ -26,11 +32,7 @@ export class UserService {
       });
       return paginateResponse(user, offset, limit, null, HttpStatus.OK);
     } catch (error) {
-      return {
-        message: 'Unable to get user',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -43,11 +45,7 @@ export class UserService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to create user',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -55,19 +53,14 @@ export class UserService {
     try {
       const user = await this.repository.findOneBy({ id });
       if (!user) {
-        return {
-          message: 'User not Found',
-          error: null,
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('User not found');
       }
       return { data: user, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return {
-        message: 'Unable to get user',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -75,11 +68,7 @@ export class UserService {
     try {
       const user = await this.repository.findOneBy({ id });
       if (!user) {
-        return {
-          data: null,
-          error: ['User not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('User not found');
       }
       await this.repository.update(id, payload);
       return {
@@ -88,11 +77,10 @@ export class UserService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to update user',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -100,11 +88,7 @@ export class UserService {
     try {
       const user = await this.repository.findOneBy({ id });
       if (!user) {
-        return {
-          data: null,
-          error: ['User not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('User not found');
       }
       await this.repository.delete(id);
       return {
@@ -113,11 +97,10 @@ export class UserService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to delete user',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 

@@ -1,7 +1,13 @@
 import { paginateResponse } from 'src/utils/hellper';
 import { Repository } from 'typeorm';
 import { FindDto } from './../utils/dto/find.dto';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { UpdateWarehouseDto } from './dto/update-warehouse.dto';
 import { Warehouse } from './entities/warehouse.entity';
@@ -23,11 +29,7 @@ export class WarehouseService {
       });
       return paginateResponse(warehouses, offset, limit, null, HttpStatus.OK);
     } catch (error) {
-      return {
-        message: 'Unable to get warehouse',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -42,11 +44,7 @@ export class WarehouseService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to create warehouse',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -54,19 +52,14 @@ export class WarehouseService {
     try {
       const warehouse = await this.repository.findOneBy({ id });
       if (!warehouse) {
-        return {
-          message: 'Warehouse not Found',
-          error: null,
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Warehouse not found');
       }
       return { data: warehouse, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return {
-        message: 'Unable to get warehouse',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -74,11 +67,7 @@ export class WarehouseService {
     try {
       const warehouse = await this.repository.findOneBy({ id });
       if (!warehouse) {
-        return {
-          data: null,
-          error: ['Warehouse not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Warehouse not found');
       }
       await this.repository.update(id, payload);
       return {
@@ -87,11 +76,10 @@ export class WarehouseService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to update warehouse',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -99,11 +87,7 @@ export class WarehouseService {
     try {
       const warehouse = await this.repository.findOneBy({ id });
       if (!warehouse) {
-        return {
-          data: null,
-          error: ['Warehouse not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Warehouse not found');
       }
       await this.repository.delete(id);
       return {
@@ -112,11 +96,10 @@ export class WarehouseService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to delete warehouse',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

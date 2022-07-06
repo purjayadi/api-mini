@@ -1,7 +1,13 @@
 import { paginateResponse } from 'src/utils/hellper';
 import { Repository } from 'typeorm';
 import { randomNumber } from './../utils/hellper';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
 import { FindSupplierDto } from './dto/find-supplier.dto';
@@ -24,11 +30,7 @@ export class SupplierService {
       });
       return paginateResponse(suppliers, offset, limit, null, HttpStatus.OK);
     } catch (error) {
-      return {
-        message: 'Unable to get supplier',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -48,11 +50,7 @@ export class SupplierService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to create supplier',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -60,19 +58,14 @@ export class SupplierService {
     try {
       const supplier = await this.repository.findOneBy({ id });
       if (!supplier) {
-        return {
-          message: 'Supplier not Found',
-          error: null,
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Supplier not found');
       }
       return { data: supplier, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return {
-        message: 'Unable to get supplier',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -80,11 +73,7 @@ export class SupplierService {
     try {
       const supplier = await this.repository.findOneBy({ id });
       if (!supplier) {
-        return {
-          data: null,
-          error: ['Supplier not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Supplier not found');
       }
       await this.repository.update(id, payload);
       return {
@@ -93,11 +82,10 @@ export class SupplierService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to update supplier',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -105,11 +93,7 @@ export class SupplierService {
     try {
       const supplier = await this.repository.findOneBy({ id });
       if (!supplier) {
-        return {
-          data: null,
-          error: ['Supplier not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Supplier not found');
       }
       await this.repository.delete(id);
       return {
@@ -118,11 +102,10 @@ export class SupplierService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to delete supplier',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

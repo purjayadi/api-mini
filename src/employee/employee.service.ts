@@ -3,7 +3,13 @@ import { Repository } from 'typeorm';
 import { randomNumber } from './../utils/hellper';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { FindEmployeeDto } from './dto/find-employee.dto';
-import { Inject, Injectable, HttpStatus } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  HttpStatus,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { Employee } from './entities/employee.entity';
@@ -24,11 +30,10 @@ export class EmployeeService {
       });
       return paginateResponse(employees, offset, limit, null, HttpStatus.OK);
     } catch (error) {
-      return {
-        message: 'Unable to get employee',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -47,11 +52,10 @@ export class EmployeeService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to create employee',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -59,19 +63,14 @@ export class EmployeeService {
     try {
       const employee = await this.repository.findOneBy({ id });
       if (!employee) {
-        return {
-          message: 'Employee not Found',
-          error: null,
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Employee not found');
       }
       return { data: employee, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return {
-        message: 'Unable to get employee',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -79,11 +78,7 @@ export class EmployeeService {
     try {
       const plan = await this.repository.findOneBy({ id });
       if (!plan) {
-        return {
-          data: null,
-          error: ['Employee not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Employee not found');
       }
       await this.repository.update(id, payload);
       return {
@@ -92,11 +87,10 @@ export class EmployeeService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to update employee',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -104,11 +98,7 @@ export class EmployeeService {
     try {
       const plan = await this.repository.findOneBy({ id });
       if (!plan) {
-        return {
-          data: null,
-          error: ['Employee not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Employee not found');
       }
       await this.repository.delete({ id });
       return {
@@ -117,11 +107,10 @@ export class EmployeeService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to delete employee',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

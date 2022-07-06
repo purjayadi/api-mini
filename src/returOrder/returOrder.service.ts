@@ -4,7 +4,14 @@ import { FilterDto } from './../dto/filters.dto';
 import { StockService } from './../stock/stock.service';
 import { Repository, DataSource } from 'typeorm';
 import { paginateResponse } from './../utils/hellper';
-import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { IPaginate, IResponse } from '../interface/response.interface';
 import { ReturOrder } from './entities/returOrder.entity';
 import { ReturOrderDetail } from './entities/returOrderDetail.entity';
@@ -43,11 +50,10 @@ export class ReturOrderService {
       });
       return paginateResponse(returOrders, offset, limit, null, HttpStatus.OK);
     } catch (error) {
-      return {
-        message: 'Unable to get retur purchases',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -56,11 +62,6 @@ export class ReturOrderService {
       const count = await this.repository.count();
       const number = 1000;
       const code = 'ROC-' + (count + number + 1);
-      const data = {
-        ...payload,
-        code,
-      };
-      console.log(data);
       const returOrder = await this.repository.save({
         ...payload,
         code: code,
@@ -81,11 +82,10 @@ export class ReturOrderService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to create retur order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -93,19 +93,14 @@ export class ReturOrderService {
     try {
       const returOrder = await this.repository.findOneBy({ id });
       if (!returOrder) {
-        return {
-          message: 'Product not Found',
-          error: null,
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Data Not Found');
       }
       return { data: returOrder, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return {
-        message: 'Unable to get retur order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -115,11 +110,7 @@ export class ReturOrderService {
     try {
       const returOrder = await this.repository.findOneBy({ id });
       if (!returOrder) {
-        return {
-          data: null,
-          error: ['Data not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Data Not Found');
       }
       returOrder.returOrderDetails.map(async (detail) => {
         const productValue = await this.product.findValueProductByUnit(
@@ -176,11 +167,10 @@ export class ReturOrderService {
       };
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      return {
-        message: 'Unable to update data',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -188,11 +178,7 @@ export class ReturOrderService {
     try {
       const returOrder = await this.repository.findOneBy({ id });
       if (!returOrder) {
-        return {
-          data: null,
-          error: ['Retur purchase not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Data Not Found');
       }
       const returDelete = await this.repository.delete(id);
       if (returDelete) {
@@ -211,11 +197,10 @@ export class ReturOrderService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to delete retur order',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

@@ -3,7 +3,13 @@ import { Schedule } from './entities/schedule.entity';
 import { Repository } from 'typeorm';
 import { randomNumber } from './../utils/hellper';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   CreateScheduleDto,
   findScheduleDto,
@@ -26,11 +32,10 @@ export class ScheduleService {
       });
       return paginateResponse(schedule, offset, limit, null, HttpStatus.OK);
     } catch (error) {
-      return {
-        message: 'Unable to get schedules',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -49,11 +54,10 @@ export class ScheduleService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to create schedule',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -61,19 +65,14 @@ export class ScheduleService {
     try {
       const schedule = await this.repository.findOneBy({ id });
       if (!schedule) {
-        return {
-          message: 'Schedule not Found',
-          error: null,
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Schedule not found');
       }
       return { data: schedule, error: null, status: HttpStatus.OK };
     } catch (error) {
-      return {
-        message: 'Unable to get schedule',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -81,11 +80,7 @@ export class ScheduleService {
     try {
       const schedule = await this.repository.findOneBy({ id });
       if (!schedule) {
-        return {
-          data: null,
-          error: ['Schedule not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Schedule not found');
       }
       await this.repository.update(id, payload);
       return {
@@ -94,11 +89,10 @@ export class ScheduleService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to update schedule',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -106,11 +100,7 @@ export class ScheduleService {
     try {
       const schedule = await this.repository.findOneBy({ id });
       if (!schedule) {
-        return {
-          data: null,
-          error: ['Schedule not Found'],
-          status: HttpStatus.NOT_FOUND,
-        };
+        throw new NotFoundException('Schedule not found');
       }
       await this.repository.delete(id);
       return {
@@ -119,11 +109,10 @@ export class ScheduleService {
         status: HttpStatus.OK,
       };
     } catch (error) {
-      return {
-        message: 'Unable to delete schedule',
-        error: error.message,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      };
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
