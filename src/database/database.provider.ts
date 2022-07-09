@@ -27,19 +27,19 @@ export const databaseProviders = [
         seeds: [ResourceSeeder, CitySeeder, DistrictSeeder, SubDistrictSeeder],
         factories: [],
       };
-      // if (process.env.APP_ENV === 'development') {
-      //   await dropDatabase({
-      //     options: options as DataSourceOptions,
-      //     ifExist: true,
-      //   });
-      //   await createDatabase({
-      //     options: options as DataSourceOptions,
-      //     ifNotExist: true,
-      //   });
-      // }
+      if (process.env.APP_ENV === 'development') {
+        await dropDatabase({
+          options: options as DataSourceOptions,
+          ifExist: true,
+        });
+        await createDatabase({
+          options: options as DataSourceOptions,
+          ifNotExist: true,
+        });
+      }
       const dataSource = new DataSource(options);
       const source = await dataSource.initialize();
-      // await runSeeders(dataSource);
+      process.env.APP_ENV === 'development' && (await runSeeders(dataSource));
       return source;
     },
   },
