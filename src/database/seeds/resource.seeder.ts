@@ -53,6 +53,15 @@ export default class ResourceSeeder implements Seeder {
       {
         name: 'Accounting',
       },
+      {
+        name: 'Unit',
+      },
+      {
+        name: 'Piutang',
+      },
+      {
+        name: 'Payment',
+      },
     ]);
 
     const actions = [
