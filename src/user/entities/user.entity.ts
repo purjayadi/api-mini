@@ -1,3 +1,4 @@
+import { PiutangPayment } from './../../piutang/entities/piutangPayment.entity';
 import { ReturOrder } from './../../returOrder/entities/returOrder.entity';
 import { PurchaseOrder } from './../../purchase/entities/purchase.entity';
 import { Employee } from './../../employee/entities/employee.entity';

@@ -4,9 +4,11 @@ import {
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { PiutangPayment } from './piutangPayment.entity';
 
 @Entity()
 export class Piutang extends BaseColumn {
@@ -32,7 +34,14 @@ export class Piutang extends BaseColumn {
 
   @OneToOne(() => Order, (order) => order.piutang, {
     eager: true,
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
   })
   @JoinColumn()
   order: Order;
+
+  @OneToMany(() => PiutangPayment, (payment) => payment.piutang, {
+    eager: true,
+  })
+  payments: PiutangPayment[];
 }

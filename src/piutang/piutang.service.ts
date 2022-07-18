@@ -79,16 +79,12 @@ export class PiutangService {
 
   async increment(payload: IncDecDTO): Promise<boolean> {
     try {
-      const { orderId, amount } = payload;
-      const piutang = await this.repository.findOneBy({ orderId: orderId });
+      const { id, amount } = payload;
+      const piutang = await this.repository.findOneBy({ id: id });
       if (!piutang) {
         return false;
       }
-      await this.repository.increment(
-        { orderId: orderId },
-        'remaining',
-        amount,
-      );
+      await this.repository.increment({ id: id }, 'remaining', amount);
       Logger.log(`Increment piutang successfully ${amount}`);
       return true;
     } catch (error) {
@@ -98,16 +94,12 @@ export class PiutangService {
 
   async decrement(payload: IncDecDTO): Promise<boolean> {
     try {
-      const { orderId, amount } = payload;
-      const piutang = await this.repository.findOneBy({ orderId: orderId });
+      const { id, amount } = payload;
+      const piutang = await this.repository.findOneBy({ id: id });
       if (!piutang) {
         return false;
       }
-      await this.repository.decrement(
-        { orderId: orderId },
-        'remaining',
-        amount,
-      );
+      await this.repository.decrement({ id: id }, 'remaining', amount);
       Logger.log(`Decrement piutang successfully ${amount}`);
       return true;
     } catch (error) {

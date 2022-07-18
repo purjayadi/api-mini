@@ -1,3 +1,4 @@
+import { PiutangPayment } from './../piutang/entities/piutangPayment.entity';
 import { Stock } from './../stock/entities/stock.entity';
 import { OrderDetail } from './entities/orderDetail.entity';
 import { ProductService } from './../product/product.service';
@@ -15,10 +16,14 @@ import {
 import { CreateOrderDto, FindOrderDto, UpdateOrderDto } from './order.dto';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { paginateResponse } from 'src/utils/hellper';
+import { Piutang } from 'src/piutang/entities/piutang.entity';
+import { PiutangPaymentDetail } from 'src/piutang/entities/piutangPaymentDetail.entity';
+import { PiutangService } from 'src/piutang/piutang.service';
 
 @Injectable()
 export class OrderService {
   constructor(
+    private readonly piutangService: PiutangService,
     @Inject('ORDER_REPOSITORY')
     private readonly repository: Repository<Order>,
     @Inject('ORDER_DETAIL_REPOSITORY')
@@ -27,6 +32,12 @@ export class OrderService {
     private readonly product: ProductService,
     @Inject('STOCK_REPOSITORY')
     private readonly stockRepository: Repository<Stock>,
+    @Inject('PIUTANG_REPOSITORY')
+    private readonly piutang: Repository<Piutang>,
+    @Inject('PIUTANG_PAYMENT_REPOSITORY')
+    private readonly piutangPayment: Repository<PiutangPayment>,
+    @Inject('PIUTANG_PAYMENT_DETAIL_REPOSITORY')
+    private readonly piutangPaymentDetail: Repository<PiutangPaymentDetail>,
     @Inject('DATA_SOURCE') private readonly connection: DataSource,
   ) {}
 
@@ -47,9 +58,6 @@ export class OrderService {
                 name: Like(`%${search}%`),
               },
             },
-            {
-              date: Like(`%${search}%`),
-            },
           ],
         }),
         ...(orderBy && { order: { [orderBy]: order } }),
@@ -68,20 +76,16 @@ export class OrderService {
     await queryRunner.startTransaction();
     try {
       const data = await this.repository.find({
-        order: { invNumber: 'DESC' },
+        order: { code: 'DESC' },
         take: 1,
         skip: 0,
         withDeleted: true,
       });
-      const lastInvoice =
-        data.length > 0
-          ? (data[0].invNumber.replace(/^\D+/g, '') as unknown as number)
-          : 1000;
-      const invNumber = 'INV-' + (Number(lastInvoice) + 1);
-      const order = await this.repository.save({
+      const tryOrder = this.repository.create({
         ...payload,
-        invNumber: invNumber,
+        code: data[0]?.code ? data[0].code : 0,
       });
+      const order = await this.repository.save(tryOrder);
       if (order) {
         order.orderDetails.map(async (detail) => {
           const productValue = await this.product.findValueProductByUnit(
@@ -92,6 +96,38 @@ export class OrderService {
           this.stock.decrement(detail.productId, quantity);
         });
       }
+      if (payload.paymentMethod === 'Due Date') {
+        const piutang = await this.piutang.save({
+          orderId: order.id,
+          total: order.total,
+          remaining: order.total,
+        });
+        Logger.debug(piutang);
+        if (payload.payment) {
+          const tryPayment = this.piutangPayment.create({
+            date: payload.date,
+            piutangId: piutang.id,
+            paymentMethod: 'Cash',
+          });
+          const payment = await this.piutangPayment.save(tryPayment);
+          if (payment) {
+            const tryPaymentDetail = this.piutangPaymentDetail.create({
+              piutangId: piutang.id,
+              amount: payload.payment,
+              piutangPaymentId: payment.id,
+            });
+            const paymentDetail = await this.piutangPaymentDetail.save(
+              tryPaymentDetail,
+            );
+            if (paymentDetail) {
+              this.piutangService.decrement({
+                id: piutang.id,
+                amount: payload.payment as unknown as string,
+              });
+            }
+          }
+        }
+      }
       await queryRunner.commitTransaction();
       return {
         message: 'Create order successfully',
@@ -101,7 +137,7 @@ export class OrderService {
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new HttpException(
-        'Unable to create order',
+        error.message,
         error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
       );
     } finally {
