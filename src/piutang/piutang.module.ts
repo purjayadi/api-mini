@@ -9,5 +9,6 @@ import { PiutangController } from './piutang.controller';
   imports: [AuthModule, DatabaseModule],
   controllers: [PiutangController],
   providers: [...piutangProviders, PiutangService],
+  exports: [PiutangService],
 })
 export class PiutangModule {}

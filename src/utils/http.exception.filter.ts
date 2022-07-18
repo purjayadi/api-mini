@@ -29,7 +29,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     res.status(status).json({
       statusCode: status,
-      message: status !== 500 ? exception.message : 'Something went wrong',
+      message:
+        process.env.APP_ENV !== 'production'
+          ? exception.message
+          : 'Something went wrong',
       timestamp: new Date().toISOString(),
       path: req.url,
     });

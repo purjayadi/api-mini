@@ -23,7 +23,7 @@ export const databaseProviders = [
         database: process.env.DB_NAME,
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         // logging: process.env.APP_ENV === 'development',
-        synchronize: process.env.APP_ENV === 'development',
+        synchronize: process.env.APP_ENV !== 'production',
         seeds: [ResourceSeeder, CitySeeder, DistrictSeeder, SubDistrictSeeder],
         factories: [],
       };

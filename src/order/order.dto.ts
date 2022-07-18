@@ -69,6 +69,11 @@ export class CreateOrderDto {
 
   @IsNotEmpty()
   orderDetails: OrderDetail[];
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  payment: number;
 }
 
 export class UpdateOrderDto extends PartialType(CreateOrderDto) {}

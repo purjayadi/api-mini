@@ -3,6 +3,7 @@ import { Customer } from './../../customer/entities/customer.entity';
 import { BaseColumn } from 'src/utils/base.entity';
 import {
   AfterSoftRemove,
+  BeforeInsert,
   Column,
   Entity,
   ManyToOne,
@@ -30,6 +31,13 @@ export class Order extends BaseColumn {
   id: string;
 
   @Column({
+    unique: true,
+    type: 'integer',
+    default: 0,
+  })
+  code: number;
+
+  @Column({
     type: 'varchar',
     length: 50,
   })
@@ -38,7 +46,7 @@ export class Order extends BaseColumn {
   @Column({
     type: 'date',
   })
-  date: Date | string;
+  date: Date;
 
   @Column({
     type: 'enum',
@@ -108,5 +116,15 @@ export class Order extends BaseColumn {
   @AfterSoftRemove()
   updateStatus() {
     this.status = Status.CANCELED;
+  }
+
+  // generate code before create
+  @BeforeInsert()
+  async generateInvoice() {
+    const date = new Date(this.date);
+    this.code = this.code + 1;
+    this.invNumber = `INV-${date.getFullYear()}${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${this.code}`;
   }
 }
