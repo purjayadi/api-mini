@@ -20,10 +20,4 @@ export class SupplierBankAccount extends BaseColumn {
 
   @Column()
   name: string;
-
-  @ManyToOne(() => Supplier, (s) => s.supplierBankAccount, {
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
-  })
-  supplier: Supplier[];
 }

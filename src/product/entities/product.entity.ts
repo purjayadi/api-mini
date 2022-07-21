@@ -40,7 +40,6 @@ export class Product extends BaseColumn {
   @ManyToOne(() => Supplier, (s) => s.products, {
     onUpdate: 'CASCADE',
     cascade: true,
-    eager: true,
   })
   supplier: Supplier;
 

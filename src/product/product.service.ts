@@ -33,6 +33,9 @@ export class ProductService {
       const Products = await this.repository.findAndCount({
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
+        relations: {
+          supplier: true,
+        },
       });
       return paginateResponse(Products, offset, limit, null, HttpStatus.OK);
     } catch (error) {
