@@ -42,7 +42,6 @@ export class SupplierService {
       await this.repository.save({
         ...payload,
         code: code,
-        supplierBankAccount: payload.supplierBankAccount,
       });
       return {
         message: 'Create supplier successfully',

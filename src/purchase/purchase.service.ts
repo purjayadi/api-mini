@@ -84,9 +84,7 @@ export class PurchaseService {
           user: {
             role: false,
           },
-          supplier: {
-            supplierBankAccount: false,
-          },
+          supplier: true,
         },
       });
       return paginateResponse(
@@ -114,9 +112,7 @@ export class PurchaseService {
           user: {
             role: false,
           },
-          supplier: {
-            supplierBankAccount: false,
-          },
+          supplier: true,
         },
       });
       if (!purchaseOrder) {

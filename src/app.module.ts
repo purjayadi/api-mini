@@ -23,6 +23,7 @@ import { ResourceModule } from './user/resource/resource.module';
 import { ReturPurchaseModule } from './returPurchase/returPurchase.module';
 import { ReturOrderModule } from './returOrder/returOrder.module';
 import { PiutangModule } from './piutang/piutang.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { PiutangModule } from './piutang/piutang.module';
     ReturPurchaseModule,
     ReturOrderModule,
     PiutangModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
