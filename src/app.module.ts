@@ -1,3 +1,5 @@
+import { DatabaseModule } from 'src/database/database.module';
+import { configuration } from './../config/configuration';
 import { RolePermissionModule } from './user/rolePermission/rolePermission.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -28,6 +30,8 @@ import { FileModule } from './file/file.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: `${process.cwd()}/config/.env.${process.env.NODE_ENV}`,
+      load: [configuration],
       isGlobal: true,
     }),
     ResourceModule,
@@ -52,6 +56,7 @@ import { FileModule } from './file/file.module';
     ReturOrderModule,
     PiutangModule,
     FileModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
