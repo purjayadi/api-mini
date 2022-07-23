@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import {
   createDatabase,
@@ -13,34 +14,36 @@ import SubDistrictSeeder from './seeds/subDistrict.seeder';
 export const databaseProviders = [
   {
     provide: 'DATA_SOURCE',
-    useFactory: async () => {
+    useFactory: async (configService: ConfigService) => {
       const options: DataSourceOptions & SeederOptions = {
-        type: process.env.DB_TYPE as any,
-        host: process.env.DB_HOST,
-        port: parseInt(process.env.DB_PORT),
-        username: process.env.DB_USER,
-        password: process.env.DB_PASS,
-        database: process.env.DB_NAME,
+        type: 'mysql',
+        host: configService.get('database.host'),
+        port: configService.get('database.port'),
+        username: configService.get('database.username'),
+        password: configService.get('database.password') as any,
+        database: configService.get('database.database'),
+        logging: configService.get('database.env') !== 'development',
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         // logging: process.env.APP_ENV === 'development',
-        synchronize: process.env.APP_ENV !== 'production',
+        synchronize: configService.get('database.env') === 'development',
         seeds: [ResourceSeeder, CitySeeder, DistrictSeeder, SubDistrictSeeder],
         factories: [],
       };
-      if (process.env.APP_ENV === 'development') {
-        await dropDatabase({
-          options: options as DataSourceOptions,
-          ifExist: true,
-        });
-        await createDatabase({
-          options: options as DataSourceOptions,
-          ifNotExist: true,
-        });
-      }
+      // if (process.env.APP_ENV === 'development') {
+      //   await dropDatabase({
+      //     options: options as DataSourceOptions,
+      //     ifExist: true,
+      //   });
+      //   await createDatabase({
+      //     options: options as DataSourceOptions,
+      //     ifNotExist: true,
+      //   });
+      // }
       const dataSource = new DataSource(options);
       const source = await dataSource.initialize();
-      process.env.APP_ENV === 'development' && (await runSeeders(dataSource));
+      // process.env.APP_ENV === 'development' && (await runSeeders(dataSource));
       return source;
     },
+    inject: [ConfigService],
   },
 ];
