@@ -1,3 +1,4 @@
+import { ScheduleDetail } from './entities/scheduleDetail.entity';
 import { paginateResponse } from 'src/utils/hellper';
 import { Schedule } from './entities/schedule.entity';
 import { Repository } from 'typeorm';
@@ -21,6 +22,8 @@ export class ScheduleService {
   constructor(
     @Inject('SCHEDULE_REPOSITORY')
     private readonly repository: Repository<Schedule>,
+    @Inject('SCHEDULE_DETAIL_REPOSITORY')
+    private readonly scheduleDetail: Repository<ScheduleDetail>,
   ) {}
 
   async findAll(payload: findScheduleDto): Promise<IResponse | IPaginate> {
@@ -82,7 +85,22 @@ export class ScheduleService {
       if (!schedule) {
         throw new NotFoundException('Schedule not found');
       }
-      await this.repository.update(id, payload);
+      const payloadUpdate = {
+        date: payload.date,
+        customerId: payload.customerId,
+        employeeId: payload.employeeId,
+        description: payload.description,
+      };
+      await this.repository.update(id, payloadUpdate);
+      await this.scheduleDetail.delete({ scheduleId: id });
+      const detail = [];
+      payload.scheduleDetails.map((item: any) => {
+        detail.push({
+          ...item,
+          scheduleId: id,
+        });
+      });
+      await this.scheduleDetail.save(detail);
       return {
         message: 'Update schedule successfully',
         error: null,
