@@ -1,3 +1,4 @@
+import { FilterDto } from './../dto/filters.dto';
 import { PiutangPayment } from './../piutang/entities/piutangPayment.entity';
 import { Stock } from './../stock/entities/stock.entity';
 import { OrderDetail } from './entities/orderDetail.entity';
@@ -41,7 +42,7 @@ export class OrderService {
     @Inject('DATA_SOURCE') private readonly connection: DataSource,
   ) {}
 
-  async findAll(payload: FindOrderDto): Promise<IResponse | IPaginate> {
+  async findAll(payload: FilterDto): Promise<IResponse | IPaginate> {
     try {
       const { offset, limit, withDeleted, search, orderBy, order } = payload;
       const orders = await this.repository.findAndCount({
@@ -60,7 +61,12 @@ export class OrderService {
             },
           ],
         }),
-        ...(orderBy && { order: { [orderBy]: order } }),
+        order: {
+          invNumber: 'DESC',
+          [orderBy]: order,
+        },
+
+        // ...(orderBy && { order: { [orderBy]: order } }),
       });
       return paginateResponse(orders, offset, limit, null, HttpStatus.OK);
     } catch (error) {
@@ -106,7 +112,6 @@ export class OrderService {
         if (payload.payment) {
           const tryPayment = this.piutangPayment.create({
             date: payload.date,
-            piutangId: piutang.id,
             paymentMethod: 'Cash',
           });
           const payment = await this.piutangPayment.save(tryPayment);

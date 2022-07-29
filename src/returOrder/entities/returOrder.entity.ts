@@ -21,9 +21,7 @@ export class ReturOrder extends BaseColumn {
   @Column()
   date: Date;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   customerId: string;
 
   @Column({
@@ -36,13 +34,12 @@ export class ReturOrder extends BaseColumn {
   })
   total: number;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   userId: string;
 
   @ManyToOne(() => Customer, (p) => p.returOrders, {
     onUpdate: 'CASCADE',
+    eager: true,
   })
   customer: Customer;
 

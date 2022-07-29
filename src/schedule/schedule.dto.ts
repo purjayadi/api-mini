@@ -25,7 +25,10 @@ export class findScheduleDto {
   public readonly offset: number;
 
   @Optional()
-  readonly query?: string;
+  public readonly status: StatusFormat;
+
+  @Optional()
+  public readonly date: Date;
 }
 
 export class CreateScheduleDto {

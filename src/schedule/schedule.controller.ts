@@ -1,3 +1,4 @@
+import { FilterDto } from './../dto/filters.dto';
 import { ScheduleService } from './schedule.service';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import {
@@ -35,7 +36,7 @@ export class ScheduleController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.READ, 'Schedule'])
   @Get()
-  findAll(@Query() payload: findScheduleDto): Promise<IResponse | IPaginate> {
+  findAll(@Query() payload: FilterDto): Promise<IResponse | IPaginate> {
     return this.service.findAll(payload);
   }
 

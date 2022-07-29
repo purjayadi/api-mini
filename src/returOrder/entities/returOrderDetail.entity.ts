@@ -8,22 +8,16 @@ export class ReturOrderDetail {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   returOrderId: string;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   productId: string;
 
   @Column()
   quantity: number;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   unitId: string;
 
   @Column({

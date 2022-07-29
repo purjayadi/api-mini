@@ -3,11 +3,9 @@ import {
   BeforeInsert,
   Column,
   Entity,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Piutang } from './piutang.entity';
 import { PiutangPaymentDetail } from './piutangPaymentDetail.entity';
 
 export enum PaymentMethod {
@@ -28,9 +26,6 @@ export class PiutangPayment extends BaseColumn {
   @Column()
   date: Date;
 
-  @Column()
-  piutangId: string;
-
   @Column({
     nullable: true,
   })
@@ -39,17 +34,9 @@ export class PiutangPayment extends BaseColumn {
   @Column()
   paymentMethod: PaymentMethod | string;
 
-  @ManyToOne(() => Piutang, (p) => p.payments, {
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
-  })
-  piutang: Piutang;
-
   @OneToMany(() => PiutangPaymentDetail, (p) => p.piutangPayment, {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
-    eager: true,
-    cascade: true,
   })
   piutangPaymentDetails: PiutangPaymentDetail[];
 

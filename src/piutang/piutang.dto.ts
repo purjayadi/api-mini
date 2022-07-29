@@ -30,7 +30,7 @@ export class IncDecDTO {
 export class PaymentDTO {
   @IsDateString()
   @IsNotEmpty()
-  public readonly paymentDate: Date;
+  public readonly date: Date;
 
   @IsString()
   @IsNotEmpty()
@@ -46,7 +46,7 @@ export class PaymentDTO {
 
   @IsArray()
   @IsNotEmpty()
-  public readonly piutangs: PiutangDTO[];
+  public readonly piutangPaymentDetails: any[];
 }
 
 export class PiutangDTO {

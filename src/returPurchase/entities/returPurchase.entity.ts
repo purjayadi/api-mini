@@ -21,9 +21,7 @@ export class ReturPurchase extends BaseColumn {
   @Column()
   date: Date;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   supplierId: string;
 
   @Column({
@@ -36,13 +34,12 @@ export class ReturPurchase extends BaseColumn {
   })
   total: number;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   userId: string;
 
   @ManyToOne(() => Supplier, (p) => p.returPurchases, {
     onUpdate: 'CASCADE',
+    eager: true,
   })
   supplier: Supplier;
 

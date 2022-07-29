@@ -1,16 +1,15 @@
+import { FilterDto } from './../dto/filters.dto';
 import { paginateResponse } from 'src/utils/hellper';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import {
   HttpStatus,
   Inject,
   Injectable,
-  Logger,
   HttpException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
-import { FindCustomerDto } from './dto/find-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { Customer } from './entities/customer.entity';
 
@@ -21,12 +20,29 @@ export class CustomerService {
     private readonly repository: Repository<Customer>,
   ) {}
 
-  async findAll(payload: FindCustomerDto): Promise<IResponse | IPaginate> {
+  async findAll(payload: FilterDto): Promise<IResponse | IPaginate> {
     try {
-      const { offset, limit } = payload;
+      const { offset, limit, search } = payload;
       const customers = await this.repository.findAndCount({
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
+        ...(search && {
+          where: [
+            {
+              customerNumber: Like(`%${search}%`),
+            },
+            {
+              name: Like(`%${search}%`),
+            },
+            {
+              shopName: Like(`%${search}%`),
+            },
+            {
+              phone: Like(`%${search}%`),
+            },
+          ],
+        }),
+        order: { customerNumber: 'DESC' },
       });
       return paginateResponse(customers, offset, limit, null, HttpStatus.OK);
     } catch (error) {
@@ -36,13 +52,17 @@ export class CustomerService {
 
   async create(payload: CreateCustomerDto): Promise<IResponse> {
     try {
-      const count = await this.repository.count();
-      const code = 'CCP-' + (count + 10000 + 1);
-      Logger.debug(code);
-      await this.repository.save({
-        ...payload,
-        code: code,
+      const data = await this.repository.find({
+        order: { code: 'DESC' },
+        take: 1,
+        skip: 0,
+        withDeleted: true,
       });
+      const saveCustomer = this.repository.create({
+        ...payload,
+        code: data[0]?.code ? data[0].code : 0,
+      });
+      await this.repository.save(saveCustomer);
       return {
         message: 'Create customer successfully',
         error: null,

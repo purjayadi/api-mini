@@ -4,6 +4,7 @@ import { Schedule } from './../../schedule/entities/schedule.entity';
 import { Employee } from './../../employee/entities/employee.entity';
 import { BaseColumn } from '../../utils/base.entity';
 import {
+  BeforeInsert,
   Column,
   Entity,
   ManyToOne,
@@ -19,8 +20,15 @@ export class Customer extends BaseColumn {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({
+    unique: true,
+    type: 'integer',
+    default: 0,
+  })
+  code: number;
+
   @Column({ unique: true })
-  code: string;
+  customerNumber: string;
 
   @Column()
   name: string;
@@ -101,4 +109,13 @@ export class Customer extends BaseColumn {
     onUpdate: 'CASCADE',
   })
   returOrders: ReturOrder[];
+
+  @BeforeInsert()
+  async generateInvoice() {
+    const date = new Date(this.joinDate);
+    this.code = this.code + 1;
+    this.customerNumber = `CGM-${date.getFullYear()}${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${this.code}`;
+  }
 }
