@@ -1,12 +1,12 @@
 import { FilterDto } from './../dto/filters.dto';
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { PermissionAction } from 'src/auth/casl.ability.factory';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CheckPermissions } from 'src/auth/permission.decorator';
 import { PermissionsGuard } from 'src/auth/permission.guard';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { PiutangService } from './piutang.service';
-import { findPiutang } from './piutang.dto';
+import { findPiutang, PaymentDTO } from './piutang.dto';
 
 @Controller('piutang')
 export class PiutangController {
@@ -24,5 +24,19 @@ export class PiutangController {
   @Get('find')
   findPiutangByCustomer(@Query() payload: findPiutang): Promise<IResponse> {
     return this.service.findPiutangByCustomer(payload);
+  }
+
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @CheckPermissions([PermissionAction.READ, 'Piutang'])
+  @Get('payment')
+  findPayment(@Query() payload: FilterDto): Promise<IResponse | IPaginate> {
+    return this.service.findPayment(payload);
+  }
+
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @CheckPermissions([PermissionAction.READ, 'Piutang'])
+  @Post('payment')
+  payment(@Body() payload: PaymentDTO): Promise<IResponse> {
+    return this.service.payment(payload);
   }
 }

@@ -14,17 +14,13 @@ export class ReturPurchaseDetail {
   })
   returPurchaseId: string;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   productId: string;
 
   @Column()
   quantity: number;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   unitId: string;
 
   @Column({
@@ -45,6 +41,7 @@ export class ReturPurchaseDetail {
 
   @ManyToOne(() => Product, (u) => u.returPurchaseDetails, {
     onUpdate: 'CASCADE',
+    eager: true,
   })
   product: Product;
 

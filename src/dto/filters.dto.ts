@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsDateString,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class FilterDto {
   @IsOptional()
@@ -32,5 +38,26 @@ export class FilterDto {
   public readonly order: string;
 
   @IsOptional()
+  @IsDateString()
   public readonly dueDate: Date;
+
+  @IsOptional()
+  @IsDateString()
+  public readonly date: Date;
+
+  @IsOptional()
+  @IsString()
+  public readonly customer: string;
+
+  @IsOptional()
+  @IsString()
+  public readonly name: string;
+
+  @IsOptional()
+  @IsString()
+  public readonly customerNumber: string;
+
+  @IsOptional()
+  @IsString()
+  public readonly status: any;
 }

@@ -1,3 +1,4 @@
+import { FilterDto } from './../dto/filters.dto';
 import {
   Controller,
   Get,
@@ -25,7 +26,7 @@ export class OrderController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.READ, 'Order'])
   @Get()
-  findAll(@Query() payload: FindOrderDto): Promise<IResponse | IPaginate> {
+  findAll(@Query() payload: FilterDto): Promise<IResponse | IPaginate> {
     return this.service.findAll(payload);
   }
 

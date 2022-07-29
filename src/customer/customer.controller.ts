@@ -1,3 +1,4 @@
+import { FilterDto } from './../dto/filters.dto';
 import { PermissionAction } from './../auth/casl.ability.factory';
 import { PermissionsGuard } from './../auth/permission.guard';
 import { JwtAuthGuard } from './../auth/jwt-auth.guard';
@@ -33,7 +34,7 @@ export class CustomerController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.READ, 'Customer'])
   @Get()
-  findAll(@Query() payload: FindCustomerDto): Promise<IResponse | IPaginate> {
+  findAll(@Query() payload: FilterDto): Promise<IResponse | IPaginate> {
     return this.customerService.findAll(payload);
   }
 

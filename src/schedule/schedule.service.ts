@@ -1,3 +1,4 @@
+import { FilterDto } from './../dto/filters.dto';
 import { ScheduleDetail } from './entities/scheduleDetail.entity';
 import { paginateResponse } from 'src/utils/hellper';
 import { Schedule } from './entities/schedule.entity';
@@ -11,11 +12,7 @@ import {
   HttpException,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  CreateScheduleDto,
-  findScheduleDto,
-  UpdateScheduleDto,
-} from './schedule.dto';
+import { CreateScheduleDto, UpdateScheduleDto } from './schedule.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -26,12 +23,16 @@ export class ScheduleService {
     private readonly scheduleDetail: Repository<ScheduleDetail>,
   ) {}
 
-  async findAll(payload: findScheduleDto): Promise<IResponse | IPaginate> {
+  async findAll(payload: FilterDto): Promise<IResponse | IPaginate> {
     try {
-      const { offset, limit } = payload;
+      const { offset, limit, status, date } = payload;
       const schedule = await this.repository.findAndCount({
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
+        where: {
+          ...(status && { status: status }),
+          ...(date && { date: date }),
+        },
       });
       return paginateResponse(schedule, offset, limit, null, HttpStatus.OK);
     } catch (error) {
