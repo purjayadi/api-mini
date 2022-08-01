@@ -63,7 +63,7 @@ export class OrderService {
         }),
         order: {
           invNumber: 'DESC',
-          [orderBy]: order,
+          ...(orderBy && { [orderBy]: order ? order : 'ASC' }),
         },
 
         // ...(orderBy && { order: { [orderBy]: order } }),
