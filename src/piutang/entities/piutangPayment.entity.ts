@@ -11,6 +11,7 @@ import { PiutangPaymentDetail } from './piutangPaymentDetail.entity';
 export enum PaymentMethod {
   CASH = 'Cash',
   TRANSFER = 'Transfer',
+  TITIP_BAYAR = 'Titip Bayar',
 }
 
 @Entity()

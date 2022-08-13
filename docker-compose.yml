@@ -41,21 +41,5 @@ services:
       msnetwork:
         ipv4_address: 172.25.0.3
 
-  nginx-proxy:
-    container_name: api-proxy
-    restart: unless-stopped
-    build:
-      dockerfile: Dockerfile
-      context: ./proxy
-    depends_on:
-      - app
-      - db
-    ports:
-      - '80:80'
-      - '443:443'
-    networks:
-      msnetwork:
-        ipv4_address: 172.25.0.4
-
 volumes:
   db_data:

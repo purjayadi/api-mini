@@ -38,28 +38,39 @@ export class PiutangService {
         dueDate,
         customer,
       } = payload;
+
       const piutang = await this.repository.findAndCount({
-        relations: [
-          'piutangPaymentDetails',
-          'piutangPaymentDetails.piutangPayment',
-        ],
+        relations: ['piutangPaymentDetails'],
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
         ...(withDeleted === 'true' ? { withDeleted: true } : {}),
-        ...(search && {
-          where: [
-            {
-              order: {
-                invNumber: Like(`%${search}%`),
-                customer: {
-                  name: Like(`%${search}%`),
-                  ...(customer && { id: customer }),
+        ...(search || dueDate || customer
+          ? {
+              where: [
+                search && {
+                  order: {
+                    invNumber: Like(`%${search}%`),
+                    customer: {
+                      name: Like(`%${search}%`),
+                      customerNumber: Like(`%${search}%`),
+                    },
+                  },
                 },
-                dueDate: dueDate,
-              },
-            },
-          ],
-        }),
+                dueDate && {
+                  order: {
+                    dueDate: dueDate,
+                  },
+                },
+                customer && {
+                  order: {
+                    customer: {
+                      id: customer,
+                    },
+                  },
+                },
+              ],
+            }
+          : {}),
         ...(orderBy && { order: { [orderBy]: order } }),
       });
       return paginateResponse(piutang, offset, limit, null, HttpStatus.OK);

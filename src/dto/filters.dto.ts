@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  IsBooleanString,
   IsDateString,
   IsNumber,
   IsOptional,
@@ -46,6 +47,14 @@ export class FilterDto {
   public readonly date: Date;
 
   @IsOptional()
+  @IsDateString()
+  public readonly startDate: Date;
+
+  @IsOptional()
+  @IsDateString()
+  public readonly endDate: Date;
+
+  @IsOptional()
   @IsString()
   public readonly customer: string;
 
@@ -59,5 +68,17 @@ export class FilterDto {
 
   @IsOptional()
   @IsString()
+  public readonly invNumber: string;
+
+  @IsOptional()
+  @IsString()
   public readonly status: any;
+
+  @IsOptional()
+  @IsString()
+  public readonly categoryId: string;
+
+  @IsOptional()
+  @IsBooleanString()
+  public readonly isPaid: any;
 }

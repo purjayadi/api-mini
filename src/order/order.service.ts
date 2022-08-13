@@ -14,12 +14,13 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateOrderDto, FindOrderDto, UpdateOrderDto } from './order.dto';
+import { CreateOrderDto, UpdateOrderDto } from './order.dto';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { paginateResponse } from 'src/utils/hellper';
 import { Piutang } from 'src/piutang/entities/piutang.entity';
 import { PiutangPaymentDetail } from 'src/piutang/entities/piutangPaymentDetail.entity';
 import { PiutangService } from 'src/piutang/piutang.service';
+import { Kas } from 'src/accounting/entities/kas.entity';
 
 @Injectable()
 export class OrderService {
@@ -39,6 +40,8 @@ export class OrderService {
     private readonly piutangPayment: Repository<PiutangPayment>,
     @Inject('PIUTANG_PAYMENT_DETAIL_REPOSITORY')
     private readonly piutangPaymentDetail: Repository<PiutangPaymentDetail>,
+    @Inject('KAS_REPOSITORY')
+    private readonly kas: Repository<Kas>,
     @Inject('DATA_SOURCE') private readonly connection: DataSource,
   ) {}
 
@@ -132,6 +135,17 @@ export class OrderService {
             }
           }
         }
+      } else {
+        if (payload.status === 'Completed') {
+          const payloadKas = {
+            date: payload.date,
+            description: 'Penjualan dengan No. Invoice ' + order.invNumber,
+            debit: order.total,
+            source: 'Penjualan:' + order.invNumber,
+            credit: 0,
+          };
+          this.kas.save(payloadKas);
+        }
       }
       await queryRunner.commitTransaction();
       return {
@@ -192,6 +206,7 @@ export class OrderService {
         employeeId: payload.employeeId,
         total: payload.total,
         paymentMethod: payload.paymentMethod,
+        status: payload.status,
       };
       const newOrderDetail = [];
       payload.orderDetails?.map(async (detail) => {
@@ -220,6 +235,32 @@ export class OrderService {
           Logger.log(`Decrease stock success ${quantity}`);
         }
       });
+      const kas = await this.kas.findOne({
+        where: { source: 'Penjualan:' + order.invNumber },
+      });
+      if (kas) {
+        const payloadKas = {
+          date: payload.date,
+          description: 'Penjualan dengan No. Invoice ' + order.invNumber,
+          debit: payload.total,
+          source: 'Penjualan:' + order.invNumber,
+          credit: 0,
+        };
+        await this.kas.update(kas.id, payloadKas);
+      } else {
+        if (payload.status === 'Completed') {
+          const payloadKas = {
+            date: payload.date,
+            description: 'Penjualan dengan No. Invoice ' + order.invNumber,
+            debit: payload.total,
+            source: 'Penjualan:' + order.invNumber,
+            credit: 0,
+          };
+          await this.kas.save(payloadKas);
+        } else if (payload.status === 'Canceled') {
+          await this.kas.softDelete(kas.id);
+        }
+      }
 
       await queryRunner.commitTransaction();
       return {
@@ -256,6 +297,12 @@ export class OrderService {
             await this.repository.delete({ id });
           }
         });
+        const kas = await this.kas.findOne({
+          where: { source: 'Penjualan:' + order.invNumber },
+        });
+        if (kas) {
+          await this.kas.softDelete(kas.id);
+        }
       }
       return {
         message: 'Delete order successfully',
@@ -289,6 +336,12 @@ export class OrderService {
           }
         });
       }
+      const kas = await this.kas.findOne({
+        where: { source: 'Penjualan:' + order.invNumber },
+      });
+      if (kas) {
+        await this.kas.softDelete(kas.id);
+      }
       return {
         message: 'Soft delete order successfully',
         error: null,
@@ -310,6 +363,12 @@ export class OrderService {
       });
       if (!order) {
         throw new NotFoundException('Order Not Found');
+      }
+      const kas = await this.kas.findOne({
+        where: { source: 'Penjualan:' + order.invNumber },
+      });
+      if (kas) {
+        await this.kas.recover({ id: kas.id });
       }
       if (order) {
         order.orderDetails.map(async (detail) => {

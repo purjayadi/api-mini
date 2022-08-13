@@ -8,6 +8,7 @@ import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
 import { orderProviders, orderDetailProviders } from './order.provider';
 import { piutangProviders } from 'src/piutang/piutang.provider';
+import { kasProviders } from 'src/accounting/accounting.provider';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { piutangProviders } from 'src/piutang/piutang.provider';
     ...orderProviders,
     ...orderDetailProviders,
     ...piutangProviders,
+    ...kasProviders,
     OrderService,
   ],
 })

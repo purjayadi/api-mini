@@ -21,6 +21,7 @@ export enum PaymentMethod {
 }
 
 export enum Status {
+  PO = 'Pending Order',
   COMPLETED = 'Completed',
   CANCELED = 'Canceled',
 }
@@ -51,7 +52,7 @@ export class Order extends BaseColumn {
   @Column({
     type: 'enum',
     enum: Status,
-    default: Status.COMPLETED,
+    default: Status.PO,
   })
   status: Status;
 
@@ -60,14 +61,10 @@ export class Order extends BaseColumn {
   })
   total: number;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   customerId: string;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   employeeId: string;
 
   @Column({
