@@ -14,13 +14,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CheckPermissions } from 'src/auth/permission.decorator';
-import { AccountingService } from './accounting.service';
 import { FilterDto } from 'src/dto/filters.dto';
-import { CreateKasDto, UpdateKasDto } from 'src/dto/accounting.dto';
+import { CreateCashFlowDto, UpdateCashFlowDto } from 'src/dto/accounting.dto';
+import { CashFlowService } from './cashFlow.service';
 
-@Controller('kas')
-export class AccountingController {
-  constructor(private readonly service: AccountingService) {}
+@Controller('cash-flow')
+export class CashFlowController {
+  constructor(private readonly service: CashFlowService) {}
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.READ, 'Accounting'])
@@ -32,7 +32,7 @@ export class AccountingController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.CREATE, 'Accounting'])
   @Post()
-  create(@Body() payload: CreateKasDto) {
+  create(@Body() payload: CreateCashFlowDto) {
     return this.service.create(payload);
   }
 
@@ -44,9 +44,16 @@ export class AccountingController {
   }
 
   @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @CheckPermissions([PermissionAction.READ, 'Accounting'])
+  @Get('/number/:id')
+  findByCode(@Param('id') id: string) {
+    return this.service.findCashFlowByCode(id);
+  }
+
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @CheckPermissions([PermissionAction.UPDATE, 'Accounting'])
   @Patch(':id')
-  update(@Param('id') id: string, @Body() payload: UpdateKasDto) {
+  update(@Param('id') id: string, @Body() payload: UpdateCashFlowDto) {
     return this.service.update(id, payload);
   }
 

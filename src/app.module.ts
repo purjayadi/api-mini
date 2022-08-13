@@ -26,6 +26,9 @@ import { ReturPurchaseModule } from './returPurchase/returPurchase.module';
 import { ReturOrderModule } from './returOrder/returOrder.module';
 import { PiutangModule } from './piutang/piutang.module';
 import { FileModule } from './file/file.module';
+import { CashFlowModule } from './accounting/cashFlow.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -57,6 +60,9 @@ import { FileModule } from './file/file.module';
     PiutangModule,
     FileModule,
     DatabaseModule,
+    CashFlowModule,
+    DashboardModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

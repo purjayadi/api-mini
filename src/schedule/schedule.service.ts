@@ -91,6 +91,7 @@ export class ScheduleService {
         customerId: payload.customerId,
         employeeId: payload.employeeId,
         description: payload.description,
+        status: payload.status,
       };
       await this.repository.update(id, payloadUpdate);
       await this.scheduleDetail.delete({ scheduleId: id });

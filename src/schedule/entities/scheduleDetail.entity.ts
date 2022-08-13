@@ -13,9 +13,7 @@ export class ScheduleDetail {
   })
   scheduleId: string;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   productId: string;
 
   @Column({
@@ -23,9 +21,7 @@ export class ScheduleDetail {
   })
   quantity: number;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   unitId: string;
 
   @ManyToOne(() => Schedule, (c) => c.scheduleDetails, {

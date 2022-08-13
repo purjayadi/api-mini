@@ -10,6 +10,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { CashFlow } from 'src/accounting/entities/cashFlow.entity';
 
 export enum GenderFormat {
   MALE = 'male',
@@ -89,4 +90,9 @@ export class Employee extends BaseColumn {
 
   @OneToMany(() => Order, (o) => o.employee)
   orders: Order[];
+
+  @OneToMany(() => CashFlow, (o) => o.employee, {
+    onUpdate: 'CASCADE',
+  })
+  cashFlow: CashFlow[];
 }

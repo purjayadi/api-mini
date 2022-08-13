@@ -11,6 +11,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { PaymentMethod } from './entities/order.entity';
+import { Status } from './entities/order.entity';
 
 export class FindOrderDto {
   @IsOptional()
@@ -74,6 +75,10 @@ export class CreateOrderDto {
   @IsNumber()
   @Type(() => Number)
   payment: number;
+
+  @IsString()
+  @IsOptional()
+  status: Status;
 }
 
 export class UpdateOrderDto extends PartialType(CreateOrderDto) {}

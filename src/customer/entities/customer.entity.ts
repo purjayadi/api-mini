@@ -56,7 +56,9 @@ export class Customer extends BaseColumn {
   })
   employeeId: string;
 
-  @Column()
+  @Column({
+    type: 'date',
+  })
   joinDate: Date;
 
   @Column({

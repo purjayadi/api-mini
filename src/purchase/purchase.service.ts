@@ -140,6 +140,7 @@ export class PurchaseService {
           detail.productId,
           detail.unitId,
         );
+
         const stock = await this.stock.findOne(detail.productId);
         if (stock) {
           const quantity = productValue.value * detail.quantity;
@@ -158,6 +159,7 @@ export class PurchaseService {
         supplierId: payload.supplierId,
         userId: payload.userId,
         warehouseId: payload.warehouseId,
+        status: payload.status,
       };
 
       const purchaseLines = [];

@@ -17,6 +17,7 @@ import {
 } from 'typeorm';
 import { Price } from './price.entity';
 import { ReturPurchaseDetail } from 'src/returPurchase/entities/returPurchaseDetail.entity';
+import { Category } from 'src/category/entities/category.entity';
 
 @Entity()
 export class Product extends BaseColumn {
@@ -32,10 +33,11 @@ export class Product extends BaseColumn {
   @Column()
   purchasePrice: number;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   supplierId: string;
+
+  @Column()
+  categoryId: string;
 
   @ManyToOne(() => Supplier, (s) => s.products, {
     onUpdate: 'CASCADE',
@@ -73,4 +75,11 @@ export class Product extends BaseColumn {
 
   @OneToOne(() => ReturOrderDetail, (rpd) => rpd.product)
   returOrderDetails: ReturOrderDetail[];
+
+  @ManyToOne(() => Category, (s) => s.products, {
+    onUpdate: 'CASCADE',
+    cascade: true,
+    eager: true,
+  })
+  category: Category;
 }

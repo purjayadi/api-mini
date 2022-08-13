@@ -7,14 +7,10 @@ export class RolePermission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   roleId: string;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   permissionId: string;
 
   @ManyToOne(() => Permission, (p) => p.rolePermission, {

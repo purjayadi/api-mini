@@ -19,6 +19,10 @@ export class CreateProductDto {
   @IsNotEmpty()
   public readonly supplierId: string;
 
+  @IsString()
+  @IsNotEmpty()
+  public readonly categoryId: string;
+
   @IsArray()
   @IsOptional()
   public readonly prices: any;

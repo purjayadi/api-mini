@@ -8,14 +8,10 @@ export class OrderDetail {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   orderId: string;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   productId: string;
 
   @Column({
@@ -39,9 +35,7 @@ export class OrderDetail {
   })
   subTotal: number;
 
-  @Column({
-    select: false,
-  })
+  @Column()
   unitId: string;
 
   @ManyToOne(() => Order, (order) => order.orderDetails, {
