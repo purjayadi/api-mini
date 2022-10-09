@@ -65,7 +65,7 @@ export class OrderService {
           ],
         }),
         order: {
-          invNumber: 'DESC',
+          code: 'DESC',
           ...(orderBy && { [orderBy]: order ? order : 'ASC' }),
         },
 

@@ -30,6 +30,21 @@ export class AccountingService {
         categoryId,
         withDeleted,
       } = payload;
+      const reduceKas = await this.repository.find({
+        ...(search || startDate || endDate || categoryId
+          ? {
+              where: [
+                search && {
+                  description: Like(`%${search}%`),
+                },
+                startDate || endDate
+                  ? { date: Between(startDate, endDate) }
+                  : {},
+                categoryId && { categoryId: categoryId },
+              ],
+            }
+          : {}),
+      });
       const data = await this.repository.findAndCount({
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
@@ -47,8 +62,17 @@ export class AccountingService {
               ],
             }
           : {}),
+        order: {
+          date: 'DESC',
+        },
       });
-      return paginateResponse(data, offset, limit, null, HttpStatus.OK);
+      const balance = reduceKas.reduce((acc, curr) => {
+        const countData = acc + (curr.debit - curr.credit);
+        return countData;
+      }, 0);
+      return paginateResponse(data, offset, limit, null, HttpStatus.OK, {
+        balance: balance,
+      });
     } catch (error) {
       throw new HttpException(
         error.message,

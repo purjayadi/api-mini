@@ -1,6 +1,6 @@
 import { CreateCashFlowDto, UpdateCashFlowDto } from './../dto/accounting.dto';
 import { paginateResponse } from 'src/utils/hellper';
-import { Like, Repository } from 'typeorm';
+import { Between, Like, Repository } from 'typeorm';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import {
   Inject,
@@ -24,11 +24,11 @@ export class CashFlowService {
 
   async findAll(payload: FilterDto): Promise<IResponse | IPaginate> {
     try {
-      const { offset, limit, search, date } = payload;
+      const { offset, limit, search, startDate, endDate, categoryId } = payload;
       const data = await this.repository.findAndCount({
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
-        ...(search || date
+        ...(search || startDate || endDate
           ? {
               where: [
                 search && {
@@ -37,12 +37,16 @@ export class CashFlowService {
                   },
                   cashFlowNumber: Like(`%${search}%`),
                 },
-                date && {
-                  date: date,
-                },
+                startDate || endDate
+                  ? { date: Between(startDate, endDate) }
+                  : {},
+                categoryId && { categoryId: categoryId },
               ],
             }
           : {}),
+        order: {
+          code: 'DESC',
+        },
       });
       return paginateResponse(data, offset, limit, null, HttpStatus.OK);
     } catch (error) {
@@ -67,7 +71,10 @@ export class CashFlowService {
       });
       const cashFlow = await this.repository.save(trySave);
       if (cashFlow) {
-        if (payload.categoryId !== payload.toCategoryId && payload.toCategoryId !== '' ) {
+        if (
+          payload.categoryId !== payload.toCategoryId &&
+          payload.toCategoryId !== ''
+        ) {
           const kas = {
             date: payload.date,
             description: payload.description,

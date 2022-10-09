@@ -29,6 +29,7 @@ import { FileModule } from './file/file.module';
 import { CashFlowModule } from './accounting/cashFlow.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { CategoryModule } from './category/category.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { CategoryModule } from './category/category.module';
     CashFlowModule,
     DashboardModule,
     CategoryModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService],

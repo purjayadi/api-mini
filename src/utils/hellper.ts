@@ -16,6 +16,7 @@ export function paginateResponse(
   limit: number,
   error: string[],
   status: number,
+  optional?: any,
 ) {
   const [result, total] = data;
   const lastPage = Math.ceil(total / limit);
@@ -32,5 +33,6 @@ export function paginateResponse(
       prevPage: prevPage,
       lastPage: lastPage,
     },
+    optional: optional,
   };
 }

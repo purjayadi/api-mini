@@ -71,7 +71,12 @@ export class PiutangService {
               ],
             }
           : {}),
-        ...(orderBy && { order: { [orderBy]: order } }),
+        order: {
+          order: {
+            dueDate: 'ASC',
+          },
+        },
+        // ...(orderBy && { order: { [orderBy]: order } }),
       });
       return paginateResponse(piutang, offset, limit, null, HttpStatus.OK);
     } catch (error) {

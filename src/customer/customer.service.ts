@@ -42,7 +42,7 @@ export class CustomerService {
             },
           ],
         }),
-        order: { customerNumber: 'DESC' },
+        order: { code: 'ASC' },
       });
       return paginateResponse(customers, offset, limit, null, HttpStatus.OK);
     } catch (error) {

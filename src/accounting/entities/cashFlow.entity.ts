@@ -41,10 +41,10 @@ export class CashFlow extends BaseColumn {
   @Column()
   categoryId: string;
 
-  @Column({
-    nullable: true,
-  })
-  toCategoryId: string;
+  // @Column({
+  //   nullable: true,
+  // })
+  // toCategoryId: string;
 
   @Column({
     type: 'enum',
@@ -74,10 +74,10 @@ export class CashFlow extends BaseColumn {
   })
   category: Category;
 
-  @ManyToOne(() => Category, (e) => e.cashFlows, {
-    eager: true,
-  })
-  toCategory: Category;
+  // @ManyToOne(() => Category, (e) => e.cashFlows, {
+  //   eager: true,
+  // })
+  // toCategory: Category;
 
   @BeforeInsert()
   async generateInvoice() {
