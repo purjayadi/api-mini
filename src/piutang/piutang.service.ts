@@ -34,13 +34,13 @@ export class PiutangService {
         withDeleted,
         search,
         orderBy,
-        order,
+        // order,
         dueDate,
         customer,
       } = payload;
 
       const piutang = await this.repository.findAndCount({
-        relations: ['piutangPaymentDetails'],
+        relations: ['piutangPaymentDetails', 'order'],
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
         ...(withDeleted === 'true' ? { withDeleted: true } : {}),
