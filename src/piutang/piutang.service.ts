@@ -37,6 +37,7 @@ export class PiutangService {
         // order,
         dueDate,
         customer,
+        categoryId,
       } = payload;
 
       const piutang = await this.repository.findAndCount({
@@ -44,7 +45,7 @@ export class PiutangService {
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
         ...(withDeleted === 'true' ? { withDeleted: true } : {}),
-        ...(search || dueDate || customer
+        ...(search || dueDate || customer || categoryId
           ? {
               where: [
                 search && {
@@ -68,6 +69,15 @@ export class PiutangService {
                     },
                   },
                 },
+                categoryId && {
+                  order: {
+                    orderDetails: {
+                      product: {
+                        categoryId: categoryId,
+                      },
+                    },
+                  },
+                },
               ],
             }
           : {}),
@@ -76,7 +86,6 @@ export class PiutangService {
             dueDate: 'ASC',
           },
         },
-        // ...(orderBy && { order: { [orderBy]: order } }),
       });
       return paginateResponse(piutang, offset, limit, null, HttpStatus.OK);
     } catch (error) {
