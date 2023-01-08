@@ -34,7 +34,7 @@ import { ReportModule } from './report/report.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `${process.cwd()}/config/.env.${process.env.NODE_ENV}`,
+      envFilePath: `${process.cwd()}/.env.${process.env.NODE_ENV}`,
       load: [configuration],
       isGlobal: true,
     }),

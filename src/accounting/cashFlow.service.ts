@@ -28,20 +28,20 @@ export class CashFlowService {
       const data = await this.repository.findAndCount({
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
-        ...(search || startDate || endDate
+        ...(search || startDate || endDate || categoryId
           ? {
-              where: [
-                search && {
+              where: {
+                ...(search && {
                   employee: {
                     name: Like(`%${search}%`),
                   },
                   cashFlowNumber: Like(`%${search}%`),
-                },
-                startDate || endDate
+                }),
+                ...(startDate || endDate
                   ? { date: Between(startDate, endDate) }
-                  : {},
-                categoryId && { categoryId: categoryId },
-              ],
+                  : {}),
+                ...(categoryId && { categoryId: categoryId }),
+              },
             }
           : {}),
         order: {

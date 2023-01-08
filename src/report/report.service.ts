@@ -42,8 +42,8 @@ export class ReportService {
           date: data.date,
           akun: data.category.name,
           description: data.description,
-          debit: data.debit,
-          credit: data.credit,
+          debit: Number(data.debit),
+          credit: Number(data.credit),
           saldoAkhir: closeqty,
         };
       });

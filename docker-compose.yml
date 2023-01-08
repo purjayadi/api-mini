@@ -30,7 +30,7 @@ services:
       context: ./
       dockerfile: Dockerfile
     ports:
-      - '3005:3005'
+      - '9000:9000'
     volumes:
       - ./:/home/app
     depends_on:
