@@ -1,0 +1,45 @@
+version: '3.3'
+networks:
+  msnetwork:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/24
+
+services:
+  db:
+    container_name: db-mini
+    restart: unless-stopped
+    image: 'mysql:latest'
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: db_mini
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - '3311:3306'
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      msnetwork:
+        ipv4_address: 172.25.0.2
+  app:
+    container_name: mini-erp
+    restart: unless-stopped
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - '9000:9000'
+    volumes:
+      - ./:/home/app
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
+    networks:
+      msnetwork:
+        ipv4_address: 172.25.0.3
+
+volumes:
+  db_data:
