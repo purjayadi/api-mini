@@ -13,6 +13,6 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-  await app.listen(9000);
+  await app.listen(process.env.PORT || 3005);
 }
 bootstrap();
