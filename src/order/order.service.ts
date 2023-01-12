@@ -47,11 +47,10 @@ export class OrderService {
 
   async findAll(payload: FilterDto): Promise<IResponse | IPaginate> {
     try {
-      const { offset, limit, withDeleted, search, orderBy, order } = payload;
+      const { offset, limit, search, orderBy, order } = payload;
       const orders = await this.repository.findAndCount({
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
-        ...(withDeleted === 'true' ? { withDeleted: true } : {}),
         ...(search && {
           where: [
             {
