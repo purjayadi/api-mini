@@ -1,0 +1,1 @@
+{"version":3,"file":"supplierBank.provider.js","sourceRoot":"","sources":["../../../src/supplierAccount/supplierBank.provider.ts"],"names":[],"mappings":";;;AAAA,sFAA4E;AAG/D,QAAA,qBAAqB,GAAG;IACnC;QACE,OAAO,EAAE,0BAA0B;QACnC,UAAU,EAAE,CAAC,UAAsB,EAAE,EAAE,CACrC,UAAU,CAAC,aAAa,CAAC,gDAAmB,CAAC;QAC/C,MAAM,EAAE,CAAC,aAAa,CAAC;KACxB;CACF,CAAC"}
