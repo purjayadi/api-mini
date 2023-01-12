@@ -1,0 +1,582 @@
+[
+    {
+        "id": 4094,
+        "name": "SANDUBAYA (SANDUJAYA)",
+        "cityId": 261
+    },
+    {
+        "id": 4105,
+        "name": "AMPENAN",
+        "cityId": 261
+    },
+    {
+        "id": 4163,
+        "name": "CAKRANEGARA",
+        "cityId": 261
+    },
+    {
+        "id": 4171,
+        "name": "SELAPARANG (SELAPRANG)",
+        "cityId": 261
+    },
+    {
+        "id": 4189,
+        "name": "SEKARBELA",
+        "cityId": 261
+    },
+    {
+        "id": 4209,
+        "name": "MATARAM",
+        "cityId": 261
+    },
+    {
+        "id": 4095,
+        "name": "HU\\U",
+        "cityId": 262
+    },
+    {
+        "id": 4110,
+        "name": "DOMPU",
+        "cityId": 262
+    },
+    {
+        "id": 4123,
+        "name": "MENGGELEWA (MANGGELEWA)",
+        "cityId": 262
+    },
+    {
+        "id": 4129,
+        "name": "WOJA",
+        "cityId": 262
+    },
+    {
+        "id": 4149,
+        "name": "PEKAT",
+        "cityId": 262
+    },
+    {
+        "id": 4175,
+        "name": "KEMPO",
+        "cityId": 262
+    },
+    {
+        "id": 4185,
+        "name": "PAJO",
+        "cityId": 262
+    },
+    {
+        "id": 4202,
+        "name": "KILO",
+        "cityId": 262
+    },
+    {
+        "id": 4096,
+        "name": "SEKONGKANG",
+        "cityId": 263
+    },
+    {
+        "id": 4103,
+        "name": "SATELUK (SETELUK)",
+        "cityId": 263
+    },
+    {
+        "id": 4108,
+        "name": "TALIWANG",
+        "cityId": 263
+    },
+    {
+        "id": 4124,
+        "name": "BRANG REA",
+        "cityId": 263
+    },
+    {
+        "id": 4145,
+        "name": "JEREWEH",
+        "cityId": 263
+    },
+    {
+        "id": 4147,
+        "name": "MALUK",
+        "cityId": 263
+    },
+    {
+        "id": 4194,
+        "name": "BRANG ENE",
+        "cityId": 263
+    },
+    {
+        "id": 4201,
+        "name": "POTO TANO",
+        "cityId": 263
+    },
+    {
+        "id": 4097,
+        "name": "LANTUNG",
+        "cityId": 264
+    },
+    {
+        "id": 4115,
+        "name": "LABUHAN BADAS",
+        "cityId": 264
+    },
+    {
+        "id": 4120,
+        "name": "UTAN",
+        "cityId": 264
+    },
+    {
+        "id": 4121,
+        "name": "TARANO",
+        "cityId": 264
+    },
+    {
+        "id": 4128,
+        "name": "BATULANTEH",
+        "cityId": 264
+    },
+    {
+        "id": 4132,
+        "name": "MOYO UTARA",
+        "cityId": 264
+    },
+    {
+        "id": 4133,
+        "name": "ALAS",
+        "cityId": 264
+    },
+    {
+        "id": 4134,
+        "name": "MOYO HILIR",
+        "cityId": 264
+    },
+    {
+        "id": 4140,
+        "name": "MOYO HULU",
+        "cityId": 264
+    },
+    {
+        "id": 4150,
+        "name": "LOPOK",
+        "cityId": 264
+    },
+    {
+        "id": 4152,
+        "name": "UNTER IWES (UNTERWIRIS)",
+        "cityId": 264
+    },
+    {
+        "id": 4153,
+        "name": "EMPANG",
+        "cityId": 264
+    },
+    {
+        "id": 4158,
+        "name": "SUMBAWA",
+        "cityId": 264
+    },
+    {
+        "id": 4159,
+        "name": "PLAMPANG",
+        "cityId": 264
+    },
+    {
+        "id": 4160,
+        "name": "BUER",
+        "cityId": 264
+    },
+    {
+        "id": 4173,
+        "name": "LAPE (LAPE LOPOK)",
+        "cityId": 264
+    },
+    {
+        "id": 4177,
+        "name": "LUNYUK",
+        "cityId": 264
+    },
+    {
+        "id": 4183,
+        "name": "ALAS BARAT",
+        "cityId": 264
+    },
+    {
+        "id": 4187,
+        "name": "LABANGKA",
+        "cityId": 264
+    },
+    {
+        "id": 4198,
+        "name": "ORONG TELU",
+        "cityId": 264
+    },
+    {
+        "id": 4204,
+        "name": "MARONGE",
+        "cityId": 264
+    },
+    {
+        "id": 4205,
+        "name": "ROPANG",
+        "cityId": 264
+    },
+    {
+        "id": 4206,
+        "name": "LENANGGUAR",
+        "cityId": 264
+    },
+    {
+        "id": 4208,
+        "name": "RHEE",
+        "cityId": 264
+    },
+    {
+        "id": 4098,
+        "name": "BATUKLIANG UTARA",
+        "cityId": 265
+    },
+    {
+        "id": 4099,
+        "name": "BATUKLIANG",
+        "cityId": 265
+    },
+    {
+        "id": 4101,
+        "name": "PRAYA",
+        "cityId": 265
+    },
+    {
+        "id": 4114,
+        "name": "PRINGGARATA",
+        "cityId": 265
+    },
+    {
+        "id": 4118,
+        "name": "JANAPRIA",
+        "cityId": 265
+    },
+    {
+        "id": 4126,
+        "name": "PRAYA BARAT",
+        "cityId": 265
+    },
+    {
+        "id": 4131,
+        "name": "JONGGAT",
+        "cityId": 265
+    },
+    {
+        "id": 4135,
+        "name": "PRAYA BARAT DAYA",
+        "cityId": 265
+    },
+    {
+        "id": 4142,
+        "name": "PRAYA TENGAH",
+        "cityId": 265
+    },
+    {
+        "id": 4143,
+        "name": "KOPANG",
+        "cityId": 265
+    },
+    {
+        "id": 4144,
+        "name": "PRAYA TIMUR",
+        "cityId": 265
+    },
+    {
+        "id": 4179,
+        "name": "PUJUT",
+        "cityId": 265
+    },
+    {
+        "id": 4100,
+        "name": "PRINGGASELA",
+        "cityId": 266
+    },
+    {
+        "id": 4102,
+        "name": "AIKMEL",
+        "cityId": 266
+    },
+    {
+        "id": 4106,
+        "name": "PRINGGABAYA",
+        "cityId": 266
+    },
+    {
+        "id": 4107,
+        "name": "SURALAGA",
+        "cityId": 266
+    },
+    {
+        "id": 4112,
+        "name": "SAMBALIA (SAMBELIA)",
+        "cityId": 266
+    },
+    {
+        "id": 4122,
+        "name": "WANASABA",
+        "cityId": 266
+    },
+    {
+        "id": 4125,
+        "name": "LABUHAN HAJI",
+        "cityId": 266
+    },
+    {
+        "id": 4139,
+        "name": "KERUAK",
+        "cityId": 266
+    },
+    {
+        "id": 4141,
+        "name": "JEROWARU",
+        "cityId": 266
+    },
+    {
+        "id": 4151,
+        "name": "SEMBALUN",
+        "cityId": 266
+    },
+    {
+        "id": 4157,
+        "name": "SAKRA BARAT",
+        "cityId": 266
+    },
+    {
+        "id": 4166,
+        "name": "MASBAGIK",
+        "cityId": 266
+    },
+    {
+        "id": 4167,
+        "name": "SELONG",
+        "cityId": 266
+    },
+    {
+        "id": 4170,
+        "name": "SIKUR",
+        "cityId": 266
+    },
+    {
+        "id": 4172,
+        "name": "SUKAMULIA",
+        "cityId": 266
+    },
+    {
+        "id": 4178,
+        "name": "TERARA",
+        "cityId": 266
+    },
+    {
+        "id": 4180,
+        "name": "SAKRA TIMUR",
+        "cityId": 266
+    },
+    {
+        "id": 4191,
+        "name": "MONTONG GADING",
+        "cityId": 266
+    },
+    {
+        "id": 4192,
+        "name": "SAKRA",
+        "cityId": 266
+    },
+    {
+        "id": 4200,
+        "name": "SUELA (SUWELA)",
+        "cityId": 266
+    },
+    {
+        "id": 4104,
+        "name": "BAYAN",
+        "cityId": 267
+    },
+    {
+        "id": 4148,
+        "name": "GANGGA",
+        "cityId": 267
+    },
+    {
+        "id": 4168,
+        "name": "KAYANGAN",
+        "cityId": 267
+    },
+    {
+        "id": 4181,
+        "name": "PEMENANG",
+        "cityId": 267
+    },
+    {
+        "id": 4190,
+        "name": "TANJUNG",
+        "cityId": 267
+    },
+    {
+        "id": 4109,
+        "name": "GERUNG",
+        "cityId": 268
+    },
+    {
+        "id": 4111,
+        "name": "NARMADA",
+        "cityId": 268
+    },
+    {
+        "id": 4113,
+        "name": "LABUAPI",
+        "cityId": 268
+    },
+    {
+        "id": 4127,
+        "name": "KEDIRI",
+        "cityId": 268
+    },
+    {
+        "id": 4136,
+        "name": "LINGSAR",
+        "cityId": 268
+    },
+    {
+        "id": 4137,
+        "name": "BATU LAYAR",
+        "cityId": 268
+    },
+    {
+        "id": 4138,
+        "name": "SEKOTONG",
+        "cityId": 268
+    },
+    {
+        "id": 4161,
+        "name": "GUNUNGSARI",
+        "cityId": 268
+    },
+    {
+        "id": 4182,
+        "name": "KURIPAN",
+        "cityId": 268
+    },
+    {
+        "id": 4188,
+        "name": "LEMBAR",
+        "cityId": 268
+    },
+    {
+        "id": 4116,
+        "name": "SOROMANDI",
+        "cityId": 269
+    },
+    {
+        "id": 4117,
+        "name": "SAPE",
+        "cityId": 269
+    },
+    {
+        "id": 4119,
+        "name": "WERA",
+        "cityId": 269
+    },
+    {
+        "id": 4130,
+        "name": "MONTA",
+        "cityId": 269
+    },
+    {
+        "id": 4146,
+        "name": "PALIBELO",
+        "cityId": 269
+    },
+    {
+        "id": 4154,
+        "name": "MADAPANGGA",
+        "cityId": 269
+    },
+    {
+        "id": 4155,
+        "name": "BOLO",
+        "cityId": 269
+    },
+    {
+        "id": 4156,
+        "name": "SANGGAR",
+        "cityId": 269
+    },
+    {
+        "id": 4162,
+        "name": "DONGGO",
+        "cityId": 269
+    },
+    {
+        "id": 4164,
+        "name": "BELO",
+        "cityId": 269
+    },
+    {
+        "id": 4165,
+        "name": "WOHA",
+        "cityId": 269
+    },
+    {
+        "id": 4169,
+        "name": "RASANAE BARAT",
+        "cityId": 269
+    },
+    {
+        "id": 4174,
+        "name": "RASANAE TIMUR",
+        "cityId": 269
+    },
+    {
+        "id": 4176,
+        "name": "LANGGUDU",
+        "cityId": 269
+    },
+    {
+        "id": 4184,
+        "name": "LAMBU",
+        "cityId": 269
+    },
+    {
+        "id": 4186,
+        "name": "ASAKOTA",
+        "cityId": 269
+    },
+    {
+        "id": 4193,
+        "name": "LAMBITU",
+        "cityId": 269
+    },
+    {
+        "id": 4195,
+        "name": "WAWO",
+        "cityId": 269
+    },
+    {
+        "id": 4196,
+        "name": "PARADO",
+        "cityId": 269
+    },
+    {
+        "id": 4197,
+        "name": "TAMBORA",
+        "cityId": 269
+    },
+    {
+        "id": 4199,
+        "name": "RABA",
+        "cityId": 269
+    },
+    {
+        "id": 4203,
+        "name": "AMBALAWI",
+        "cityId": 269
+    },
+    {
+        "id": 4207,
+        "name": "MPUNDA",
+        "cityId": 269
+    }
+]
