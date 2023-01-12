@@ -16,7 +16,7 @@ async function bootstrap() {
     app.enableCors();
     app.useGlobalFilters(new http_exception_filter_1.HttpExceptionFilter());
     app.useGlobalPipes(new common_1.ValidationPipe({ whitelist: true, transform: true }));
-    await app.listen(9000);
+    await app.listen(process.env.PORT || 3005);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
