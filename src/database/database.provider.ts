@@ -25,7 +25,7 @@ export const databaseProviders = [
         logging: configService.get('database.env') !== 'development',
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         // logging: process.env.APP_ENV === 'development',
-        synchronize: configService.get('database.env') === 'development',
+        synchronize: false,
         // seeds: [ResourceSeeder, CitySeeder, DistrictSeeder, SubDistrictSeeder],
         // factories: [],
       };

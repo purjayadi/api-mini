@@ -68,7 +68,19 @@ let OrderService = class OrderService {
             const tryOrder = this.repository.create(Object.assign(Object.assign({}, payload), { code: ((_a = data[0]) === null || _a === void 0 ? void 0 : _a.code) ? data[0].code : 0 }));
             const order = await this.repository.save(tryOrder);
             if (order) {
-                order.orderDetails.map(async (detail) => {
+                const orderDetail = payload.orderDetails.map((val) => {
+                    return {
+                        orderId: order.id,
+                        productId: val.productId,
+                        quantity: val.quantity,
+                        price: val.price,
+                        discount: val.discount,
+                        subTotal: val.subTotal,
+                        unitId: val.unitId,
+                    };
+                });
+                await this.orderDetail.save(orderDetail);
+                payload.orderDetails.map(async (detail) => {
                     const productValue = await this.product.findValueProductByUnit(detail.productId, detail.unitId);
                     const quantity = productValue.value * detail.quantity;
                     this.stock.decrement(detail.productId, quantity);
@@ -80,7 +92,6 @@ let OrderService = class OrderService {
                     total: order.total,
                     remaining: order.total,
                 });
-                common_1.Logger.debug(piutang);
                 if (payload.payment) {
                     const tryPayment = this.piutangPayment.create({
                         date: payload.date,
@@ -105,7 +116,16 @@ let OrderService = class OrderService {
             }
             else {
                 if (payload.status === 'Completed') {
-                    order.orderDetails.map(async (detail) => {
+                    const orderDetail = payload.orderDetails.reduce((accumulator, cur) => {
+                        const date = cur.product.category.id;
+                        const found = accumulator.find((elem) => elem.product.category.id === date);
+                        if (found)
+                            found.subTotal += cur.subTotal;
+                        else
+                            accumulator.push(cur);
+                        return accumulator;
+                    }, []);
+                    orderDetail.map(async (detail) => {
                         const payloadKas = {
                             date: payload.date,
                             description: 'Penjualan dengan No. Invoice ' + order.invNumber,
@@ -287,11 +307,13 @@ let OrderService = class OrderService {
                     }
                 });
             }
-            const kas = await this.kas.findOne({
-                where: { source: 'Penjualan:' + order.invNumber },
+            const kas = await this.kas.findBy({
+                source: 'Penjualan:' + order.invNumber,
             });
             if (kas) {
-                await this.kas.softDelete(kas.id);
+                kas.map(async (val) => {
+                    await this.kas.softDelete(val.id);
+                });
             }
             return {
                 message: 'Soft delete order successfully',

@@ -140,5 +140,10 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], OrderDetail.prototype, "unitId", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Object)
+], OrderDetail.prototype, "product", void 0);
 exports.OrderDetail = OrderDetail;
 //# sourceMappingURL=order.dto.js.map

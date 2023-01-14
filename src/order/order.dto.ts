@@ -1,6 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsDateString,
   IsEnum,
   IsNotEmpty,
@@ -111,4 +112,8 @@ export class OrderDetail {
   @IsNotEmpty()
   @IsString()
   unitId: string;
+
+  @IsNotEmpty()
+  @IsArray()
+  product: any;
 }

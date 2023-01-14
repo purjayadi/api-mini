@@ -31,5 +31,6 @@ export declare class OrderDetail {
     discount: number;
     subTotal: number;
     unitId: string;
+    product: any;
 }
 export {};
