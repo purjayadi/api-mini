@@ -87,7 +87,7 @@ export class OrderService {
         order: { code: 'DESC' },
         take: 1,
         skip: 0,
-        withDeleted: true,
+        withDeleted: false,
       });
       const tryOrder = this.repository.create({
         ...payload,
