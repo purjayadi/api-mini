@@ -16,7 +16,7 @@ exports.databaseProviders = [
                 database: configService.get('database.database'),
                 logging: configService.get('database.env') !== 'development',
                 entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-                synchronize: configService.get('database.env') === 'development',
+                synchronize: false,
             };
             const dataSource = new typeorm_1.DataSource(options);
             const source = await dataSource.initialize();

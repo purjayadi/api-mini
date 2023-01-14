@@ -9,7 +9,7 @@ export declare class RoleController {
         error: any;
         status: import("@nestjs/common").HttpStatus;
     }>;
-    findAll(payload: any): Promise<import("../../interface/response.interface").IPaginate | import("../../interface/response.interface").IResponse>;
+    findAll(payload: any): Promise<import("../../interface/response.interface").IResponse | import("../../interface/response.interface").IPaginate>;
     findOne(id: string): Promise<{
         data: import("../entities/role.entity").Role;
         error: any;

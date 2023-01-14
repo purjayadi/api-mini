@@ -88,7 +88,6 @@ export class Order extends BaseColumn {
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.order, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
-    cascade: true,
     eager: true,
   })
   orderDetails: OrderDetail[];

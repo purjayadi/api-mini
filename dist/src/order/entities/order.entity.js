@@ -112,7 +112,6 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => orderDetail_entity_1.OrderDetail, (orderDetail) => orderDetail.order, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
-        cascade: true,
         eager: true,
     }),
     __metadata("design:type", Array)
