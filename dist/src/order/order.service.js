@@ -63,7 +63,7 @@ let OrderService = class OrderService {
                 order: { code: 'DESC' },
                 take: 1,
                 skip: 0,
-                withDeleted: false,
+                withDeleted: true,
             });
             const tryOrder = this.repository.create(Object.assign(Object.assign({}, payload), { code: ((_a = data[0]) === null || _a === void 0 ? void 0 : _a.code) ? data[0].code : 0 }));
             const order = await this.repository.save(tryOrder);
