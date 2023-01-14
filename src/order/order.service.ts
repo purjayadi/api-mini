@@ -51,6 +51,7 @@ export class OrderService {
       const orders = await this.repository.findAndCount({
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
+        // ...(withDeleted === 'true' ? { withDeleted: true } : {}),
         ...(search && {
           where: [
             {
@@ -87,7 +88,7 @@ export class OrderService {
         order: { code: 'DESC' },
         take: 1,
         skip: 0,
-        withDeleted: false,
+        withDeleted: true,
       });
       const tryOrder = this.repository.create({
         ...payload,
