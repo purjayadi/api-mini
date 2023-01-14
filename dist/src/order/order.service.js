@@ -105,14 +105,17 @@ let OrderService = class OrderService {
             }
             else {
                 if (payload.status === 'Completed') {
-                    const payloadKas = {
-                        date: payload.date,
-                        description: 'Penjualan dengan No. Invoice ' + order.invNumber,
-                        debit: order.total,
-                        source: 'Penjualan:' + order.invNumber,
-                        credit: 0,
-                    };
-                    this.kas.save(payloadKas);
+                    order.orderDetails.map(async (detail) => {
+                        const payloadKas = {
+                            date: payload.date,
+                            description: 'Penjualan dengan No. Invoice ' + order.invNumber,
+                            debit: detail.subTotal,
+                            source: 'Penjualan:' + order.invNumber,
+                            credit: 0,
+                            categoryId: detail.product.category.id,
+                        };
+                        this.kas.save(payloadKas);
+                    });
                 }
             }
             await queryRunner.commitTransaction();
