@@ -20,7 +20,7 @@ const common_1 = require("@nestjs/common");
 const hellper_1 = require("../utils/hellper");
 const piutang_service_1 = require("../piutang/piutang.service");
 let OrderService = class OrderService {
-    constructor(piutangService, repository, orderDetail, stock, product, stockRepository, piutang, piutangPayment, piutangPaymentDetail, kas, connection) {
+    constructor(piutangService, repository, orderDetail, stock, product, stockRepository, piutang, piutangPayment, kas, connection) {
         this.piutangService = piutangService;
         this.repository = repository;
         this.orderDetail = orderDetail;
@@ -29,7 +29,6 @@ let OrderService = class OrderService {
         this.stockRepository = stockRepository;
         this.piutang = piutang;
         this.piutangPayment = piutangPayment;
-        this.piutangPaymentDetail = piutangPaymentDetail;
         this.kas = kas;
         this.connection = connection;
     }
@@ -96,21 +95,14 @@ let OrderService = class OrderService {
                     const tryPayment = this.piutangPayment.create({
                         date: payload.date,
                         paymentMethod: 'Cash',
+                        amount: payload.payment,
                     });
                     const payment = await this.piutangPayment.save(tryPayment);
                     if (payment) {
-                        const tryPaymentDetail = this.piutangPaymentDetail.create({
-                            piutangId: piutang.id,
+                        this.piutangService.decrement({
+                            id: piutang.id,
                             amount: payload.payment,
-                            piutangPaymentId: payment.id,
                         });
-                        const paymentDetail = await this.piutangPaymentDetail.save(tryPaymentDetail);
-                        if (paymentDetail) {
-                            this.piutangService.decrement({
-                                id: piutang.id,
-                                amount: payload.payment,
-                            });
-                        }
                     }
                 }
             }
@@ -303,7 +295,7 @@ let OrderService = class OrderService {
                     const quantity = productValue.value * detail.quantity;
                     const increment = this.stock.increment(detail.productId, quantity);
                     if (increment) {
-                        await this.repository.softDelete({ id });
+                        await this.repository.delete({ id });
                     }
                 });
             }
@@ -311,9 +303,7 @@ let OrderService = class OrderService {
                 source: 'Penjualan:' + order.invNumber,
             });
             if (kas) {
-                kas.map(async (val) => {
-                    await this.kas.softDelete(val.id);
-                });
+                await this.kas.remove(kas);
             }
             return {
                 message: 'Soft delete order successfully',
@@ -368,15 +358,13 @@ OrderService = __decorate([
     __param(5, (0, common_1.Inject)('STOCK_REPOSITORY')),
     __param(6, (0, common_1.Inject)('PIUTANG_REPOSITORY')),
     __param(7, (0, common_1.Inject)('PIUTANG_PAYMENT_REPOSITORY')),
-    __param(8, (0, common_1.Inject)('PIUTANG_PAYMENT_DETAIL_REPOSITORY')),
-    __param(9, (0, common_1.Inject)('KAS_REPOSITORY')),
-    __param(10, (0, common_1.Inject)('DATA_SOURCE')),
+    __param(8, (0, common_1.Inject)('KAS_REPOSITORY')),
+    __param(9, (0, common_1.Inject)('DATA_SOURCE')),
     __metadata("design:paramtypes", [piutang_service_1.PiutangService,
         typeorm_1.Repository,
         typeorm_1.Repository,
         stock_service_1.StockService,
         product_service_1.ProductService,
-        typeorm_1.Repository,
         typeorm_1.Repository,
         typeorm_1.Repository,
         typeorm_1.Repository,

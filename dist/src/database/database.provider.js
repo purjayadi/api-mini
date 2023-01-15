@@ -14,7 +14,7 @@ exports.databaseProviders = [
                 username: configService.get('database.username'),
                 password: configService.get('database.password'),
                 database: configService.get('database.database'),
-                logging: configService.get('database.env') !== 'development',
+                logging: false,
                 entities: [__dirname + '/../**/*.entity{.ts,.js}'],
                 synchronize: false,
             };

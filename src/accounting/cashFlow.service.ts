@@ -71,38 +71,15 @@ export class CashFlowService {
       });
       const cashFlow = await this.repository.save(trySave);
       if (cashFlow) {
-        if (
-          payload.categoryId !== payload.toCategoryId &&
-          payload.toCategoryId !== ''
-        ) {
-          const kas = {
-            date: payload.date,
-            description: payload.description,
-            source: 'Kas:' + cashFlow.cashFlowNumber,
-            debit: 0,
-            credit: payload.type === 'Credit' ? cashFlow.amount : 0,
-            categoryId: payload.categoryId,
-          };
-          const otherKas = {
-            date: payload.date,
-            description: payload.description,
-            source: 'Kas:' + cashFlow.cashFlowNumber,
-            debit: 0,
-            credit: payload.type === 'Credit' ? cashFlow.amount : 0,
-            categoryId: payload.categoryId,
-          };
-          await this.kas.save(kas);
-        } else {
-          const kas = {
-            date: payload.date,
-            description: payload.description,
-            source: 'Kas:' + cashFlow.cashFlowNumber,
-            debit: payload.type === 'Debit' ? cashFlow.amount : 0,
-            credit: payload.type === 'Credit' ? cashFlow.amount : 0,
-            categoryId: payload.categoryId,
-          };
-          await this.kas.save(kas);
-        }
+        const kas = {
+          date: payload.date,
+          description: payload.description,
+          source: 'Kas:' + cashFlow.cashFlowNumber,
+          debit: payload.type === 'Debit' ? cashFlow.amount : 0,
+          credit: payload.type === 'Credit' ? cashFlow.amount : 0,
+          categoryId: payload.categoryId,
+        };
+        await this.kas.save(kas);
       }
       return {
         message: 'Create data successfully',

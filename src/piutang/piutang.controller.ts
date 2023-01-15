@@ -1,5 +1,14 @@
 import { FilterDto } from './../dto/filters.dto';
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Query,
+  UseGuards,
+  Param,
+} from '@nestjs/common';
 import { PermissionAction } from 'src/auth/casl.ability.factory';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CheckPermissions } from 'src/auth/permission.decorator';
@@ -38,5 +47,12 @@ export class PiutangController {
   @Post('payment')
   payment(@Body() payload: PaymentDTO): Promise<IResponse> {
     return this.service.payment(payload);
+  }
+
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @CheckPermissions([PermissionAction.READ, 'Piutang'])
+  @Delete('/payment/:id')
+  remove(@Param('id') id: string) {
+    return this.service.deletePayment(id);
   }
 }

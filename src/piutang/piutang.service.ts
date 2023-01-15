@@ -13,7 +13,7 @@ import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { paginateResponse } from 'src/utils/hellper';
 import { Piutang } from './entities/piutang.entity';
 import { findPiutang, IncDecDTO, PaymentDTO } from './piutang.dto';
-import { PiutangPaymentDetail } from './entities/piutangPaymentDetail.entity';
+import { Kas } from '../accounting/entities/kas.entity';
 
 @Injectable()
 export class PiutangService {
@@ -22,8 +22,8 @@ export class PiutangService {
     private readonly repository: Repository<Piutang>,
     @Inject('PIUTANG_PAYMENT_REPOSITORY')
     private readonly paymentRepository: Repository<PiutangPayment>,
-    @Inject('PIUTANG_PAYMENT_DETAIL_REPOSITORY')
-    private readonly paymentDetail: Repository<PiutangPaymentDetail>,
+    @Inject('KAS_REPOSITORY')
+    private readonly kas: Repository<Kas>,
   ) {}
 
   async findAll(payload: FilterDto): Promise<IResponse | IPaginate> {
@@ -33,7 +33,6 @@ export class PiutangService {
         limit,
         withDeleted,
         search,
-        orderBy,
         // order,
         dueDate,
         customer,
@@ -41,7 +40,7 @@ export class PiutangService {
       } = payload;
 
       const piutang = await this.repository.findAndCount({
-        relations: ['piutangPaymentDetails', 'order'],
+        relations: ['piutangPayments', 'order'],
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
         ...(withDeleted === 'true' ? { withDeleted: true } : {}),
@@ -125,7 +124,7 @@ export class PiutangService {
     try {
       const { offset, limit, withDeleted, search, orderBy, order } = payload;
       const payment = await this.paymentRepository.findAndCount({
-        relations: ['piutangPaymentDetails'],
+        relations: ['piutang', 'piutang.order.customer'],
         ...(limit && { take: limit }),
         ...(offset && { skip: (offset - 1) * limit }),
         ...(withDeleted === 'true' ? { withDeleted: true } : {}),
@@ -151,20 +150,61 @@ export class PiutangService {
     try {
       const tryPayment = this.paymentRepository.create(payload);
       const payment = await this.paymentRepository.save(tryPayment);
-      const piutang = [];
-      payload.piutangPaymentDetails.map(async (detail) => {
-        piutang.push({
-          piutangPaymentId: payment.id,
-          piutangId: detail.piutangId,
-          amount: detail.amount,
-        });
-      });
-      await this.paymentDetail.save(piutang);
-      payload.piutangPaymentDetails.map((detail) => {
-        this.decrement({ id: detail.piutangId, amount: detail.amount });
-      });
+      this.decrement({ id: payment.piutangId, amount: payment.amount });
+
+      if (payment) {
+        const kas = {
+          date: payload.date,
+          description:
+            'Pembayaran dengan No. Pembayaran ' + payment.paymentNumber,
+          source: 'Pembayaran:' + payment.paymentNumber,
+          debit: payment.amount,
+          credit: 0,
+          categoryId: payload.categoryId,
+        };
+        await this.kas.save(kas);
+      }
       return {
         message: 'Payment order successfully',
+        error: null,
+        status: HttpStatus.OK,
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async deletePayment(id: string) {
+    try {
+      const findPaymentById = await this.paymentRepository.findOne({
+        where: {
+          id,
+        },
+      });
+      if (!findPaymentById) {
+        return {
+          message: 'Unable to find payment',
+          error: null,
+          status: HttpStatus.NOT_FOUND,
+        };
+      }
+      await this.paymentRepository.delete(id);
+      this.increment({
+        id: findPaymentById.piutangId,
+        amount: findPaymentById.amount,
+      });
+      const kas = await this.kas.findBy({
+        source: 'Pembayaran:' + findPaymentById.paymentNumber,
+      });
+
+      if (kas) {
+        await this.kas.remove(kas);
+      }
+      return {
+        message: 'Delete payment successfuly',
         error: null,
         status: HttpStatus.OK,
       };

@@ -37,6 +37,9 @@ let PiutangController = class PiutangController {
     payment(payload) {
         return this.service.payment(payload);
     }
+    remove(id) {
+        return this.service.deletePayment(id);
+    }
 };
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, permission_guard_1.PermissionsGuard),
@@ -74,6 +77,15 @@ __decorate([
     __metadata("design:paramtypes", [piutang_dto_1.PaymentDTO]),
     __metadata("design:returntype", Promise)
 ], PiutangController.prototype, "payment", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, permission_guard_1.PermissionsGuard),
+    (0, permission_decorator_1.CheckPermissions)([casl_ability_factory_1.PermissionAction.READ, 'Piutang']),
+    (0, common_1.Delete)('/payment/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PiutangController.prototype, "remove", null);
 PiutangController = __decorate([
     (0, common_1.Controller)('piutang'),
     __metadata("design:paramtypes", [piutang_service_1.PiutangService])
