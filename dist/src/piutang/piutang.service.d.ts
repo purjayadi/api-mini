@@ -1,19 +1,25 @@
 import { PiutangPayment } from './entities/piutangPayment.entity';
 import { FilterDto } from './../dto/filters.dto';
 import { Repository } from 'typeorm';
+import { HttpStatus } from '@nestjs/common';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { Piutang } from './entities/piutang.entity';
 import { findPiutang, IncDecDTO, PaymentDTO } from './piutang.dto';
-import { PiutangPaymentDetail } from './entities/piutangPaymentDetail.entity';
+import { Kas } from '../accounting/entities/kas.entity';
 export declare class PiutangService {
     private readonly repository;
     private readonly paymentRepository;
-    private readonly paymentDetail;
-    constructor(repository: Repository<Piutang>, paymentRepository: Repository<PiutangPayment>, paymentDetail: Repository<PiutangPaymentDetail>);
+    private readonly kas;
+    constructor(repository: Repository<Piutang>, paymentRepository: Repository<PiutangPayment>, kas: Repository<Kas>);
     findAll(payload: FilterDto): Promise<IResponse | IPaginate>;
     findPiutangByCustomer(payload: findPiutang): Promise<IResponse>;
     findPayment(payload: FilterDto): Promise<IResponse | IPaginate>;
     payment(payload: PaymentDTO): Promise<IResponse>;
+    deletePayment(id: string): Promise<{
+        message: string;
+        error: any;
+        status: HttpStatus;
+    }>;
     increment(payload: IncDecDTO): Promise<boolean>;
     decrement(payload: IncDecDTO): Promise<boolean>;
 }

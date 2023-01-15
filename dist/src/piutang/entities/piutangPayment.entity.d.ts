@@ -1,5 +1,5 @@
 import { BaseColumn } from 'src/utils/base.entity';
-import { PiutangPaymentDetail } from './piutangPaymentDetail.entity';
+import { Piutang } from './piutang.entity';
 export declare enum PaymentMethod {
     CASH = "Cash",
     TRANSFER = "Transfer",
@@ -7,10 +7,12 @@ export declare enum PaymentMethod {
 }
 export declare class PiutangPayment extends BaseColumn {
     id: string;
+    piutangId: string;
     paymentNumber: string;
     date: Date;
     note: string;
     paymentMethod: PaymentMethod | string;
-    piutangPaymentDetails: PiutangPaymentDetail[];
+    amount: number;
+    piutang: Piutang;
     generateInvoice(): Promise<void>;
 }

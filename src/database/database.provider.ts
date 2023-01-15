@@ -22,7 +22,7 @@ export const databaseProviders = [
         username: configService.get('database.username'),
         password: configService.get('database.password') as any,
         database: configService.get('database.database'),
-        logging: configService.get('database.env') !== 'development',
+        logging: false,
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         // logging: process.env.APP_ENV === 'development',
         synchronize: false,

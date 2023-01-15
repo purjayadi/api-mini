@@ -18,7 +18,6 @@ import { CreateOrderDto, UpdateOrderDto } from './order.dto';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { paginateResponse } from 'src/utils/hellper';
 import { Piutang } from 'src/piutang/entities/piutang.entity';
-import { PiutangPaymentDetail } from 'src/piutang/entities/piutangPaymentDetail.entity';
 import { PiutangService } from 'src/piutang/piutang.service';
 import { Kas } from 'src/accounting/entities/kas.entity';
 
@@ -38,8 +37,6 @@ export class OrderService {
     private readonly piutang: Repository<Piutang>,
     @Inject('PIUTANG_PAYMENT_REPOSITORY')
     private readonly piutangPayment: Repository<PiutangPayment>,
-    @Inject('PIUTANG_PAYMENT_DETAIL_REPOSITORY')
-    private readonly piutangPaymentDetail: Repository<PiutangPaymentDetail>,
     @Inject('KAS_REPOSITORY')
     private readonly kas: Repository<Kas>,
     @Inject('DATA_SOURCE') private readonly connection: DataSource,
@@ -127,23 +124,14 @@ export class OrderService {
           const tryPayment = this.piutangPayment.create({
             date: payload.date,
             paymentMethod: 'Cash',
+            amount: payload.payment,
           });
           const payment = await this.piutangPayment.save(tryPayment);
           if (payment) {
-            const tryPaymentDetail = this.piutangPaymentDetail.create({
-              piutangId: piutang.id,
-              amount: payload.payment,
-              piutangPaymentId: payment.id,
+            this.piutangService.decrement({
+              id: piutang.id,
+              amount: payload.payment as unknown as number,
             });
-            const paymentDetail = await this.piutangPaymentDetail.save(
-              tryPaymentDetail,
-            );
-            if (paymentDetail) {
-              this.piutangService.decrement({
-                id: piutang.id,
-                amount: payload.payment as unknown as string,
-              });
-            }
           }
         }
       } else {
@@ -358,7 +346,7 @@ export class OrderService {
           const quantity = productValue.value * detail.quantity;
           const increment = this.stock.increment(detail.productId, quantity);
           if (increment) {
-            await this.repository.softDelete({ id });
+            await this.repository.delete({ id });
           }
         });
       }
@@ -367,9 +355,7 @@ export class OrderService {
       });
 
       if (kas) {
-        kas.map(async (val) => {
-          await this.kas.softDelete(val.id);
-        });
+        await this.kas.remove(kas);
       }
       return {
         message: 'Soft delete order successfully',

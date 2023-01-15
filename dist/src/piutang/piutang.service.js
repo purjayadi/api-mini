@@ -17,15 +17,15 @@ const typeorm_1 = require("typeorm");
 const common_1 = require("@nestjs/common");
 const hellper_1 = require("../utils/hellper");
 let PiutangService = class PiutangService {
-    constructor(repository, paymentRepository, paymentDetail) {
+    constructor(repository, paymentRepository, kas) {
         this.repository = repository;
         this.paymentRepository = paymentRepository;
-        this.paymentDetail = paymentDetail;
+        this.kas = kas;
     }
     async findAll(payload) {
         try {
-            const { offset, limit, withDeleted, search, orderBy, dueDate, customer, categoryId, } = payload;
-            const piutang = await this.repository.findAndCount(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ relations: ['piutangPaymentDetails', 'order'] }, (limit && { take: limit })), (offset && { skip: (offset - 1) * limit })), (withDeleted === 'true' ? { withDeleted: true } : {})), (search || dueDate || customer || categoryId
+            const { offset, limit, withDeleted, search, dueDate, customer, categoryId, } = payload;
+            const piutang = await this.repository.findAndCount(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ relations: ['piutangPayments', 'order'] }, (limit && { take: limit })), (offset && { skip: (offset - 1) * limit })), (withDeleted === 'true' ? { withDeleted: true } : {})), (search || dueDate || customer || categoryId
                 ? {
                     where: [
                         search && {
@@ -93,7 +93,7 @@ let PiutangService = class PiutangService {
     async findPayment(payload) {
         try {
             const { offset, limit, withDeleted, search, orderBy, order } = payload;
-            const payment = await this.paymentRepository.findAndCount(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ relations: ['piutangPaymentDetails'] }, (limit && { take: limit })), (offset && { skip: (offset - 1) * limit })), (withDeleted === 'true' ? { withDeleted: true } : {})), (search && {
+            const payment = await this.paymentRepository.findAndCount(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ relations: ['piutang', 'piutang.order.customer'] }, (limit && { take: limit })), (offset && { skip: (offset - 1) * limit })), (withDeleted === 'true' ? { withDeleted: true } : {})), (search && {
                 where: [
                     {
                         paymentNumber: (0, typeorm_1.Like)(`%${search}%`),
@@ -110,20 +110,55 @@ let PiutangService = class PiutangService {
         try {
             const tryPayment = this.paymentRepository.create(payload);
             const payment = await this.paymentRepository.save(tryPayment);
-            const piutang = [];
-            payload.piutangPaymentDetails.map(async (detail) => {
-                piutang.push({
-                    piutangPaymentId: payment.id,
-                    piutangId: detail.piutangId,
-                    amount: detail.amount,
-                });
-            });
-            await this.paymentDetail.save(piutang);
-            payload.piutangPaymentDetails.map((detail) => {
-                this.decrement({ id: detail.piutangId, amount: detail.amount });
-            });
+            this.decrement({ id: payment.piutangId, amount: payment.amount });
+            if (payment) {
+                const kas = {
+                    date: payload.date,
+                    description: 'Pembayaran dengan No. Pembayaran ' + payment.paymentNumber,
+                    source: 'Pembayaran:' + payment.paymentNumber,
+                    debit: payment.amount,
+                    credit: 0,
+                    categoryId: payload.categoryId,
+                };
+                await this.kas.save(kas);
+            }
             return {
                 message: 'Payment order successfully',
+                error: null,
+                status: common_1.HttpStatus.OK,
+            };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, error.status ? common_1.HttpStatus.NOT_FOUND : common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async deletePayment(id) {
+        try {
+            const findPaymentById = await this.paymentRepository.findOne({
+                where: {
+                    id,
+                },
+            });
+            if (!findPaymentById) {
+                return {
+                    message: 'Unable to find payment',
+                    error: null,
+                    status: common_1.HttpStatus.NOT_FOUND,
+                };
+            }
+            await this.paymentRepository.delete(id);
+            this.increment({
+                id: findPaymentById.piutangId,
+                amount: findPaymentById.amount,
+            });
+            const kas = await this.kas.findBy({
+                source: 'Pembayaran:' + findPaymentById.paymentNumber,
+            });
+            if (kas) {
+                await this.kas.remove(kas);
+            }
+            return {
+                message: 'Delete payment successfuly',
                 error: null,
                 status: common_1.HttpStatus.OK,
             };
@@ -167,7 +202,7 @@ PiutangService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)('PIUTANG_REPOSITORY')),
     __param(1, (0, common_1.Inject)('PIUTANG_PAYMENT_REPOSITORY')),
-    __param(2, (0, common_1.Inject)('PIUTANG_PAYMENT_DETAIL_REPOSITORY')),
+    __param(2, (0, common_1.Inject)('KAS_REPOSITORY')),
     __metadata("design:paramtypes", [typeorm_1.Repository,
         typeorm_1.Repository,
         typeorm_1.Repository])

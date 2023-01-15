@@ -9,4 +9,9 @@ export declare class PiutangController {
     findPiutangByCustomer(payload: findPiutang): Promise<IResponse>;
     findPayment(payload: FilterDto): Promise<IResponse | IPaginate>;
     payment(payload: PaymentDTO): Promise<IResponse>;
+    remove(id: string): Promise<{
+        message: string;
+        error: any;
+        status: import("@nestjs/common").HttpStatus;
+    }>;
 }

@@ -9,7 +9,6 @@ import { Order } from './entities/order.entity';
 import { CreateOrderDto, UpdateOrderDto } from './order.dto';
 import { IResponse, IPaginate } from 'src/interface/response.interface';
 import { Piutang } from 'src/piutang/entities/piutang.entity';
-import { PiutangPaymentDetail } from 'src/piutang/entities/piutangPaymentDetail.entity';
 import { PiutangService } from 'src/piutang/piutang.service';
 import { Kas } from 'src/accounting/entities/kas.entity';
 export declare class OrderService {
@@ -21,10 +20,9 @@ export declare class OrderService {
     private readonly stockRepository;
     private readonly piutang;
     private readonly piutangPayment;
-    private readonly piutangPaymentDetail;
     private readonly kas;
     private readonly connection;
-    constructor(piutangService: PiutangService, repository: Repository<Order>, orderDetail: Repository<OrderDetail>, stock: StockService, product: ProductService, stockRepository: Repository<Stock>, piutang: Repository<Piutang>, piutangPayment: Repository<PiutangPayment>, piutangPaymentDetail: Repository<PiutangPaymentDetail>, kas: Repository<Kas>, connection: DataSource);
+    constructor(piutangService: PiutangService, repository: Repository<Order>, orderDetail: Repository<OrderDetail>, stock: StockService, product: ProductService, stockRepository: Repository<Stock>, piutang: Repository<Piutang>, piutangPayment: Repository<PiutangPayment>, kas: Repository<Kas>, connection: DataSource);
     findAll(payload: FilterDto): Promise<IResponse | IPaginate>;
     create(payload: CreateOrderDto): Promise<IResponse>;
     findOne(id: string): Promise<IResponse>;

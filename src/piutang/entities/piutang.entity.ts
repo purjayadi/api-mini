@@ -8,7 +8,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { PiutangPaymentDetail } from './piutangPaymentDetail.entity';
+import { PiutangPayment } from './piutangPayment.entity';
 
 @Entity()
 export class Piutang extends BaseColumn {
@@ -40,8 +40,10 @@ export class Piutang extends BaseColumn {
   @JoinColumn()
   order: Order;
 
-  @OneToMany(() => PiutangPaymentDetail, (payment) => payment.piutang, {
+  @OneToMany(() => PiutangPayment, (payment) => payment.piutang, {
     eager: true,
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
   })
-  piutangPaymentDetails: PiutangPaymentDetail[];
+  piutangPayments: PiutangPayment[];
 }

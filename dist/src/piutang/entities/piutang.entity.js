@@ -13,7 +13,7 @@ exports.Piutang = void 0;
 const order_entity_1 = require("./../../order/entities/order.entity");
 const base_entity_1 = require("../../utils/base.entity");
 const typeorm_1 = require("typeorm");
-const piutangPaymentDetail_entity_1 = require("./piutangPaymentDetail.entity");
+const piutangPayment_entity_1 = require("./piutangPayment.entity");
 let Piutang = class Piutang extends base_entity_1.BaseColumn {
     isPaid() {
         return this.remaining === 0;
@@ -49,11 +49,13 @@ __decorate([
     __metadata("design:type", order_entity_1.Order)
 ], Piutang.prototype, "order", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => piutangPaymentDetail_entity_1.PiutangPaymentDetail, (payment) => payment.piutang, {
+    (0, typeorm_1.OneToMany)(() => piutangPayment_entity_1.PiutangPayment, (payment) => payment.piutang, {
         eager: true,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
     }),
     __metadata("design:type", Array)
-], Piutang.prototype, "piutangPaymentDetails", void 0);
+], Piutang.prototype, "piutangPayments", void 0);
 Piutang = __decorate([
     (0, typeorm_1.Entity)()
 ], Piutang);

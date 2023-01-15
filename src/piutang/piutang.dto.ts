@@ -1,5 +1,5 @@
+import { IsNumber } from 'class-validator';
 import {
-  IsArray,
   IsDateString,
   IsDecimal,
   IsNotEmpty,
@@ -22,9 +22,9 @@ export class IncDecDTO {
   @IsNotEmpty()
   public readonly id: string;
 
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  public readonly amount: string;
+  public readonly amount: number;
 }
 
 export class PaymentDTO {
@@ -38,15 +38,23 @@ export class PaymentDTO {
 
   @IsString()
   @IsNotEmpty()
+  public readonly piutangId: string;
+
+  @IsString()
+  @IsNotEmpty()
   public readonly paymentMethod: string;
 
   @IsString()
   @IsNotEmpty()
   public readonly userId: string;
 
-  @IsArray()
+  @IsNumber()
   @IsNotEmpty()
-  public readonly piutangPaymentDetails: any[];
+  public readonly amount: number;
+
+  @IsString()
+  @IsOptional()
+  public readonly categoryId: string;
 }
 
 export class PiutangDTO {

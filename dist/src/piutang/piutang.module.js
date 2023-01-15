@@ -13,13 +13,14 @@ const common_1 = require("@nestjs/common");
 const piutang_provider_1 = require("./piutang.provider");
 const piutang_service_1 = require("./piutang.service");
 const piutang_controller_1 = require("./piutang.controller");
+const accounting_provider_1 = require("../accounting/accounting.provider");
 let PiutangModule = class PiutangModule {
 };
 PiutangModule = __decorate([
     (0, common_1.Module)({
         imports: [auth_module_1.AuthModule, database_module_1.DatabaseModule],
         controllers: [piutang_controller_1.PiutangController],
-        providers: [...piutang_provider_1.piutangProviders, piutang_service_1.PiutangService],
+        providers: [...accounting_provider_1.kasProviders, ...piutang_provider_1.piutangProviders, piutang_service_1.PiutangService],
         exports: [piutang_service_1.PiutangService],
     })
 ], PiutangModule);

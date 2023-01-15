@@ -56,37 +56,15 @@ let CashFlowService = class CashFlowService {
             const trySave = this.repository.create(Object.assign(Object.assign({}, payload), { code: ((_a = data[0]) === null || _a === void 0 ? void 0 : _a.code) ? data[0].code : 0 }));
             const cashFlow = await this.repository.save(trySave);
             if (cashFlow) {
-                if (payload.categoryId !== payload.toCategoryId &&
-                    payload.toCategoryId !== '') {
-                    const kas = {
-                        date: payload.date,
-                        description: payload.description,
-                        source: 'Kas:' + cashFlow.cashFlowNumber,
-                        debit: 0,
-                        credit: payload.type === 'Credit' ? cashFlow.amount : 0,
-                        categoryId: payload.categoryId,
-                    };
-                    const otherKas = {
-                        date: payload.date,
-                        description: payload.description,
-                        source: 'Kas:' + cashFlow.cashFlowNumber,
-                        debit: 0,
-                        credit: payload.type === 'Credit' ? cashFlow.amount : 0,
-                        categoryId: payload.categoryId,
-                    };
-                    await this.kas.save(kas);
-                }
-                else {
-                    const kas = {
-                        date: payload.date,
-                        description: payload.description,
-                        source: 'Kas:' + cashFlow.cashFlowNumber,
-                        debit: payload.type === 'Debit' ? cashFlow.amount : 0,
-                        credit: payload.type === 'Credit' ? cashFlow.amount : 0,
-                        categoryId: payload.categoryId,
-                    };
-                    await this.kas.save(kas);
-                }
+                const kas = {
+                    date: payload.date,
+                    description: payload.description,
+                    source: 'Kas:' + cashFlow.cashFlowNumber,
+                    debit: payload.type === 'Debit' ? cashFlow.amount : 0,
+                    credit: payload.type === 'Credit' ? cashFlow.amount : 0,
+                    categoryId: payload.categoryId,
+                };
+                await this.kas.save(kas);
             }
             return {
                 message: 'Create data successfully',

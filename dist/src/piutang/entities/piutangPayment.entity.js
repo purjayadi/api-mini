@@ -12,7 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PiutangPayment = exports.PaymentMethod = void 0;
 const base_entity_1 = require("../../utils/base.entity");
 const typeorm_1 = require("typeorm");
-const piutangPaymentDetail_entity_1 = require("./piutangPaymentDetail.entity");
+const typeorm_2 = require("typeorm");
+const piutang_entity_1 = require("./piutang.entity");
 var PaymentMethod;
 (function (PaymentMethod) {
     PaymentMethod["CASH"] = "Cash";
@@ -22,7 +23,7 @@ var PaymentMethod;
 let PiutangPayment = class PiutangPayment extends base_entity_1.BaseColumn {
     async generateInvoice() {
         const date = new Date(this.date);
-        this.paymentNumber = `INV-${date.getFullYear()}${(date.getMonth() + 1)
+        this.paymentNumber = `NH-${date.getFullYear()}${(date.getMonth() + 1)
             .toString()
             .padStart(2, '0')}-${Math.floor(Math.random() * 10000)}`;
     }
@@ -31,6 +32,10 @@ __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
 ], PiutangPayment.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], PiutangPayment.prototype, "piutangId", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         unique: true,
@@ -52,12 +57,18 @@ __decorate([
     __metadata("design:type", String)
 ], PiutangPayment.prototype, "paymentMethod", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => piutangPaymentDetail_entity_1.PiutangPaymentDetail, (p) => p.piutangPayment, {
+    (0, typeorm_1.Column)({
+        type: 'decimal',
+    }),
+    __metadata("design:type", Number)
+], PiutangPayment.prototype, "amount", void 0);
+__decorate([
+    (0, typeorm_2.ManyToOne)(() => piutang_entity_1.Piutang, (p) => p.piutangPayments, {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
     }),
-    __metadata("design:type", Array)
-], PiutangPayment.prototype, "piutangPaymentDetails", void 0);
+    __metadata("design:type", piutang_entity_1.Piutang)
+], PiutangPayment.prototype, "piutang", void 0);
 __decorate([
     (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
