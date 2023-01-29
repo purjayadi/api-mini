@@ -31,7 +31,12 @@ __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], CreateReturOrderDTO.prototype, "customerId", void 0);
+], CreateReturOrderDTO.prototype, "orderId", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateReturOrderDTO.prototype, "categoryId", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -47,6 +52,21 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Array)
 ], CreateReturOrderDTO.prototype, "returOrderDetails", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateReturOrderDTO.prototype, "isDecreasePiutang", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateReturOrderDTO.prototype, "isDecreaseKas", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreateReturOrderDTO.prototype, "isIncrementStock", void 0);
 exports.CreateReturOrderDTO = CreateReturOrderDTO;
 class ReturDetailDto {
 }

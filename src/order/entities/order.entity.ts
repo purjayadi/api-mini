@@ -1,3 +1,4 @@
+import { ReturOrder } from './../../returOrder/entities/returOrder.entity';
 import { Employee } from './../../employee/entities/employee.entity';
 import { Customer } from './../../customer/entities/customer.entity';
 import { BaseColumn } from 'src/utils/base.entity';
@@ -108,6 +109,11 @@ export class Order extends BaseColumn {
     cascade: true,
   })
   piutang: Piutang;
+
+  @OneToMany(() => ReturOrder, (rp) => rp.order, {
+    onUpdate: 'CASCADE',
+  })
+  returOrders: ReturOrder[];
 
   @AfterSoftRemove()
   updateStatus() {

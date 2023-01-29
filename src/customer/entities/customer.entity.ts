@@ -107,11 +107,6 @@ export class Customer extends BaseColumn {
   @OneToMany(() => Order, (o) => o.customer)
   orders: Order[];
 
-  @OneToMany(() => ReturOrder, (rp) => rp.customer, {
-    onUpdate: 'CASCADE',
-  })
-  returOrders: ReturOrder[];
-
   @BeforeInsert()
   async generateInvoice() {
     const date = new Date(this.joinDate);

@@ -1,3 +1,4 @@
+import { ReturOrder } from './../../returOrder/entities/returOrder.entity';
 import { Employee } from './../../employee/entities/employee.entity';
 import { Customer } from './../../customer/entities/customer.entity';
 import { BaseColumn } from 'src/utils/base.entity';
@@ -29,6 +30,7 @@ export declare class Order extends BaseColumn {
     customer: Customer;
     employee: Employee;
     piutang: Piutang;
+    returOrders: ReturOrder[];
     updateStatus(): void;
     generateInvoice(): Promise<void>;
 }

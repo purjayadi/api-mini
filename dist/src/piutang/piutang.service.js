@@ -71,6 +71,19 @@ let PiutangService = class PiutangService {
             throw new common_1.HttpException(error.message, error.status ? common_1.HttpStatus.NOT_FOUND : common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async findPiutangByOrder(orderId) {
+        try {
+            const piutang = await this.repository.findOne({
+                where: {
+                    orderId,
+                },
+            });
+            return { data: piutang, error: null, status: common_1.HttpStatus.OK };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, error.status ? common_1.HttpStatus.NOT_FOUND : common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async findPiutangByCustomer(payload) {
         try {
             const { customer, dueDate } = payload;
@@ -191,6 +204,38 @@ let PiutangService = class PiutangService {
             }
             await this.repository.decrement({ id: id }, 'remaining', amount);
             common_1.Logger.log(`Decrement piutang successfully ${amount}`);
+            return true;
+        }
+        catch (error) {
+            return false;
+        }
+    }
+    async decrementPiutang(payload) {
+        try {
+            const { id, amount } = payload;
+            const piutang = await this.repository.findOneBy({ id: id });
+            if (!piutang) {
+                return false;
+            }
+            await this.repository.decrement({ id: id }, 'total', amount);
+            await this.repository.decrement({ id: id }, 'remaining', amount);
+            common_1.Logger.log(`Decrement piutang successfully ${amount}`);
+            return true;
+        }
+        catch (error) {
+            return false;
+        }
+    }
+    async incrementPiutang(payload) {
+        try {
+            const { id, amount } = payload;
+            const piutang = await this.repository.findOneBy({ id: id });
+            if (!piutang) {
+                return false;
+            }
+            await this.repository.increment({ id: id }, 'total', amount);
+            await this.repository.increment({ id: id }, 'remaining', amount);
+            common_1.Logger.log(`increment piutang successfully ${amount}`);
             return true;
         }
         catch (error) {

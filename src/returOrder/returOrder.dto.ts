@@ -2,6 +2,7 @@ import { PartialType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsDateString,
   IsNotEmpty,
   IsNumber,
@@ -23,7 +24,11 @@ export class CreateReturOrderDTO {
 
   @IsString()
   @IsNotEmpty()
-  public readonly customerId: string;
+  public readonly orderId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  public readonly categoryId: string;
 
   @IsString()
   @IsNotEmpty()
@@ -36,6 +41,18 @@ export class CreateReturOrderDTO {
   @IsArray()
   @IsNotEmpty()
   public readonly returOrderDetails: ReturDetailDto[];
+
+  @IsBoolean()
+  @IsOptional()
+  public readonly isDecreasePiutang: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  public readonly isDecreaseKas: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  public readonly isIncrementStock: boolean;
 }
 
 export class ReturDetailDto {

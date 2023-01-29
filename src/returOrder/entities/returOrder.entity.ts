@@ -1,4 +1,4 @@
-import { Customer } from './../../customer/entities/customer.entity';
+import { Order } from './../../order/entities/order.entity';
 import { User } from 'src/user/entities/user.entity';
 import { BaseColumn } from 'src/utils/base.entity';
 import {
@@ -22,7 +22,7 @@ export class ReturOrder extends BaseColumn {
   date: Date;
 
   @Column()
-  customerId: string;
+  orderId: string;
 
   @Column({
     type: 'text',
@@ -34,14 +34,30 @@ export class ReturOrder extends BaseColumn {
   })
   total: number;
 
+  @Column({
+    default: false,
+  })
+  public readonly isDecreasePiutang: boolean;
+
+  @Column({
+    default: false,
+  })
+  public readonly isDecreaseKas: boolean;
+
+  @Column({
+    default: false,
+  })
+  public readonly isIncrementStock: boolean;
+
   @Column()
   userId: string;
 
-  @ManyToOne(() => Customer, (p) => p.returOrders, {
+  @ManyToOne(() => Order, (p) => p.returOrders, {
+    onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     eager: true,
   })
-  customer: Customer;
+  order: Order;
 
   @ManyToOne(() => User, (u) => u.returOrders, {
     onUpdate: 'CASCADE',

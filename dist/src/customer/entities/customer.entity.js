@@ -10,7 +10,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Customer = void 0;
-const returOrder_entity_1 = require("./../../returOrder/entities/returOrder.entity");
 const order_entity_1 = require("./../../order/entities/order.entity");
 const schedule_entity_1 = require("./../../schedule/entities/schedule.entity");
 const employee_entity_1 = require("./../../employee/entities/employee.entity");
@@ -138,12 +137,6 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => order_entity_1.Order, (o) => o.customer),
     __metadata("design:type", Array)
 ], Customer.prototype, "orders", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => returOrder_entity_1.ReturOrder, (rp) => rp.customer, {
-        onUpdate: 'CASCADE',
-    }),
-    __metadata("design:type", Array)
-], Customer.prototype, "returOrders", void 0);
 __decorate([
     (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
