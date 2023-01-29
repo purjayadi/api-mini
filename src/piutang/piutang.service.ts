@@ -95,6 +95,22 @@ export class PiutangService {
     }
   }
 
+  async findPiutangByOrder(orderId: string): Promise<IResponse> {
+    try {
+      const piutang = await this.repository.findOne({
+        where: {
+          orderId,
+        },
+      });
+      return { data: piutang, error: null, status: HttpStatus.OK };
+    } catch (error) {
+      throw new HttpException(
+        error.message,
+        error.status ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async findPiutangByCustomer(payload: findPiutang): Promise<IResponse> {
     try {
       const { customer, dueDate } = payload;
@@ -240,6 +256,38 @@ export class PiutangService {
       }
       await this.repository.decrement({ id: id }, 'remaining', amount);
       Logger.log(`Decrement piutang successfully ${amount}`);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async decrementPiutang(payload: IncDecDTO): Promise<boolean> {
+    try {
+      const { id, amount } = payload;
+      const piutang = await this.repository.findOneBy({ id: id });
+      if (!piutang) {
+        return false;
+      }
+      await this.repository.decrement({ id: id }, 'total', amount);
+      await this.repository.decrement({ id: id }, 'remaining', amount);
+      Logger.log(`Decrement piutang successfully ${amount}`);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async incrementPiutang(payload: IncDecDTO): Promise<boolean> {
+    try {
+      const { id, amount } = payload;
+      const piutang = await this.repository.findOneBy({ id: id });
+      if (!piutang) {
+        return false;
+      }
+      await this.repository.increment({ id: id }, 'total', amount);
+      await this.repository.increment({ id: id }, 'remaining', amount);
+      Logger.log(`increment piutang successfully ${amount}`);
       return true;
     } catch (error) {
       return false;

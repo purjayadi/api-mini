@@ -33,8 +33,6 @@ services:
       - '9000:9000'
     volumes:
       - ./:/home/app
-    depends_on:
-      - db
     stdin_open: true
     tty: true
     networks:

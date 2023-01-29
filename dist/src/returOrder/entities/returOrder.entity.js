@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReturOrder = void 0;
-const customer_entity_1 = require("./../../customer/entities/customer.entity");
+const order_entity_1 = require("./../../order/entities/order.entity");
 const user_entity_1 = require("../../user/entities/user.entity");
 const base_entity_1 = require("../../utils/base.entity");
 const typeorm_1 = require("typeorm");
@@ -32,7 +32,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], ReturOrder.prototype, "customerId", void 0);
+], ReturOrder.prototype, "orderId", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'text',
@@ -46,16 +46,35 @@ __decorate([
     __metadata("design:type", Number)
 ], ReturOrder.prototype, "total", void 0);
 __decorate([
+    (0, typeorm_1.Column)({
+        default: false,
+    }),
+    __metadata("design:type", Boolean)
+], ReturOrder.prototype, "isDecreasePiutang", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        default: false,
+    }),
+    __metadata("design:type", Boolean)
+], ReturOrder.prototype, "isDecreaseKas", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        default: false,
+    }),
+    __metadata("design:type", Boolean)
+], ReturOrder.prototype, "isIncrementStock", void 0);
+__decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], ReturOrder.prototype, "userId", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => customer_entity_1.Customer, (p) => p.returOrders, {
+    (0, typeorm_1.ManyToOne)(() => order_entity_1.Order, (p) => p.returOrders, {
+        onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
         eager: true,
     }),
-    __metadata("design:type", customer_entity_1.Customer)
-], ReturOrder.prototype, "customer", void 0);
+    __metadata("design:type", order_entity_1.Order)
+], ReturOrder.prototype, "order", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (u) => u.returOrders, {
         onUpdate: 'CASCADE',

@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReturOrderModule = void 0;
+const piutang_module_1 = require("./../piutang/piutang.module");
 const stock_module_1 = require("./../stock/stock.module");
 const product_module_1 = require("../product/product.module");
 const auth_module_1 = require("./../auth/auth.module");
@@ -15,15 +16,23 @@ const common_1 = require("@nestjs/common");
 const returOrder_providet_1 = require("./returOrder.providet");
 const returOrder_service_1 = require("./returOrder.service");
 const returOrder_controller_1 = require("./returOrder.controller");
+const accounting_provider_1 = require("../accounting/accounting.provider");
 let ReturOrderModule = class ReturOrderModule {
 };
 ReturOrderModule = __decorate([
     (0, common_1.Module)({
-        imports: [database_module_1.DatabaseModule, auth_module_1.AuthModule, stock_module_1.StockModule, product_module_1.ProductModule],
+        imports: [
+            database_module_1.DatabaseModule,
+            auth_module_1.AuthModule,
+            stock_module_1.StockModule,
+            product_module_1.ProductModule,
+            piutang_module_1.PiutangModule,
+        ],
         controllers: [returOrder_controller_1.ReturOrderController],
         providers: [
             ...returOrder_providet_1.returOrderProviders,
             ...returOrder_providet_1.returOrderDetailProviders,
+            ...accounting_provider_1.kasProviders,
             returOrder_service_1.ReturOrderService,
         ],
     })

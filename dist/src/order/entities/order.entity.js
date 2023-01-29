@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Order = exports.Status = exports.PaymentMethod = void 0;
+const returOrder_entity_1 = require("./../../returOrder/entities/returOrder.entity");
 const employee_entity_1 = require("./../../employee/entities/employee.entity");
 const customer_entity_1 = require("./../../customer/entities/customer.entity");
 const base_entity_1 = require("../../utils/base.entity");
@@ -136,6 +137,12 @@ __decorate([
     }),
     __metadata("design:type", piutang_entity_1.Piutang)
 ], Order.prototype, "piutang", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => returOrder_entity_1.ReturOrder, (rp) => rp.order, {
+        onUpdate: 'CASCADE',
+    }),
+    __metadata("design:type", Array)
+], Order.prototype, "returOrders", void 0);
 __decorate([
     (0, typeorm_1.AfterSoftRemove)(),
     __metadata("design:type", Function),

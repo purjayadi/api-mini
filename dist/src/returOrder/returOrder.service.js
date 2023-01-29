@@ -13,24 +13,27 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReturOrderService = void 0;
+const piutang_service_1 = require("../piutang/piutang.service");
 const product_service_1 = require("./../product/product.service");
 const stock_service_1 = require("./../stock/stock.service");
 const typeorm_1 = require("typeorm");
 const hellper_1 = require("./../utils/hellper");
 const common_1 = require("@nestjs/common");
 let ReturOrderService = class ReturOrderService {
-    constructor(repository, product, detail, connection, stock, stockRepository) {
+    constructor(repository, product, piutang, detail, connection, stock, stockRepository, kas) {
         this.repository = repository;
         this.product = product;
+        this.piutang = piutang;
         this.detail = detail;
         this.connection = connection;
         this.stock = stock;
         this.stockRepository = stockRepository;
+        this.kas = kas;
     }
     async findAll(payload) {
         try {
-            const { offset, limit } = payload;
-            const returOrders = await this.repository.findAndCount(Object.assign(Object.assign(Object.assign({}, (limit && { take: limit })), (offset && { skip: (offset - 1) * limit })), { relations: {
+            const { offset, limit, search } = payload;
+            const returOrders = await this.repository.findAndCount(Object.assign(Object.assign(Object.assign(Object.assign({}, (limit && { take: limit })), (offset && { skip: (offset - 1) * limit })), { relations: {
                     user: {
                         role: false,
                     },
@@ -39,7 +42,13 @@ let ReturOrderService = class ReturOrderService {
                             prices: false,
                         },
                     },
-                } }));
+                } }), (search && {
+                where: [
+                    {
+                        order: { invNumber: (0, typeorm_1.Like)(`%${search}%`) },
+                    },
+                ],
+            })));
             return (0, hellper_1.paginateResponse)(returOrders, offset, limit, null, common_1.HttpStatus.OK);
         }
         catch (error) {
@@ -53,11 +62,31 @@ let ReturOrderService = class ReturOrderService {
             const code = 'ROC-' + (count + number + 1);
             const returOrder = await this.repository.save(Object.assign(Object.assign({}, payload), { code: code }));
             if (returOrder) {
-                returOrder.returOrderDetails.map(async (detail) => {
-                    const productValue = await this.product.findValueProductByUnit(detail.productId, detail.unitId);
-                    const quantity = productValue.value * detail.quantity;
-                    this.stock.decrement(detail.productId, quantity);
-                });
+                if (payload.isIncrementStock) {
+                    returOrder.returOrderDetails.map(async (detail) => {
+                        const productValue = await this.product.findValueProductByUnit(detail.productId, detail.unitId);
+                        const quantity = productValue.value * detail.quantity;
+                        this.stock.increment(detail.productId, quantity);
+                    });
+                }
+                if (payload.isDecreasePiutang) {
+                    const findPiutang = await this.piutang.findPiutangByOrder(payload.orderId);
+                    await this.piutang.decrementPiutang({
+                        id: findPiutang.data.id,
+                        amount: payload.total,
+                    });
+                }
+                if (payload.isDecreaseKas) {
+                    const kas = {
+                        date: payload.date,
+                        description: 'Retur penjualan dengan No. Retur ' + code,
+                        source: 'Retur:' + code,
+                        debit: payload.total,
+                        credit: 0,
+                        categoryId: payload.categoryId,
+                    };
+                    await this.kas.save(kas);
+                }
             }
             return {
                 message: 'Create retur order successfully',
@@ -102,7 +131,7 @@ let ReturOrderService = class ReturOrderService {
             });
             const newOrder = {
                 date: payload.date,
-                customerId: payload.customerId,
+                orderId: payload.orderId,
                 total: payload.total,
                 description: payload.description,
             };
@@ -150,11 +179,28 @@ let ReturOrderService = class ReturOrderService {
             }
             const returDelete = await this.repository.delete(id);
             if (returDelete) {
-                returOrder.returOrderDetails.map(async (detail) => {
-                    const productValue = await this.product.findValueProductByUnit(detail.productId, detail.unitId);
-                    const quantity = productValue.value * detail.quantity;
-                    this.stock.increment(detail.productId, quantity);
-                });
+                if (returOrder.isIncrementStock) {
+                    returOrder.returOrderDetails.map(async (detail) => {
+                        const productValue = await this.product.findValueProductByUnit(detail.productId, detail.unitId);
+                        const quantity = productValue.value * detail.quantity;
+                        this.stock.decrement(detail.productId, quantity);
+                    });
+                }
+                if (returOrder.isDecreaseKas) {
+                    const kas = await this.kas.findOne({
+                        where: { source: 'Retur:' + returOrder.code },
+                    });
+                    if (kas) {
+                        await this.kas.delete(kas.id);
+                    }
+                }
+                if (returOrder.isDecreasePiutang) {
+                    const findPiutang = await this.piutang.findPiutangByOrder(returOrder.orderId);
+                    await this.piutang.incrementPiutang({
+                        id: findPiutang.data.id,
+                        amount: returOrder.total,
+                    });
+                }
             }
             return {
                 message: 'Delete retur order successfully',
@@ -170,14 +216,17 @@ let ReturOrderService = class ReturOrderService {
 ReturOrderService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)('RETUR_ORDER_REPOSITORY')),
-    __param(2, (0, common_1.Inject)('RETUR_ORDER_DETAIL_REPOSITORY')),
-    __param(3, (0, common_1.Inject)('DATA_SOURCE')),
-    __param(5, (0, common_1.Inject)('STOCK_REPOSITORY')),
+    __param(3, (0, common_1.Inject)('RETUR_ORDER_DETAIL_REPOSITORY')),
+    __param(4, (0, common_1.Inject)('DATA_SOURCE')),
+    __param(6, (0, common_1.Inject)('STOCK_REPOSITORY')),
+    __param(7, (0, common_1.Inject)('KAS_REPOSITORY')),
     __metadata("design:paramtypes", [typeorm_1.Repository,
         product_service_1.ProductService,
+        piutang_service_1.PiutangService,
         typeorm_1.Repository,
         typeorm_1.DataSource,
         stock_service_1.StockService,
+        typeorm_1.Repository,
         typeorm_1.Repository])
 ], ReturOrderService);
 exports.ReturOrderService = ReturOrderService;

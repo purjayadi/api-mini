@@ -1,4 +1,3 @@
-import { ReturOrder } from './../../returOrder/entities/returOrder.entity';
 import { Order } from './../../order/entities/order.entity';
 import { Schedule } from './../../schedule/entities/schedule.entity';
 import { Employee } from './../../employee/entities/employee.entity';
@@ -27,6 +26,5 @@ export declare class Customer extends BaseColumn {
     employee: Employee;
     schedules: Schedule[];
     orders: Order[];
-    returOrders: ReturOrder[];
     generateInvoice(): Promise<void>;
 }
