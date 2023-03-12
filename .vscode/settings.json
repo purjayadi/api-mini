@@ -1,0 +1,18 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "eslint.validate": [
+        "javascript"
+    ],
+    "cSpell.words": [
+        "casl",
+        "nestjs",
+        "Piutang",
+        "piutangs",
+        "protobuf",
+        "Retur",
+        "typeorm"
+    ],
+    "editor.formatOnSave": true
+}

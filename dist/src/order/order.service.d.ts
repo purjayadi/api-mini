@@ -1,0 +1,33 @@
+import { FilterDto } from './../dto/filters.dto';
+import { PiutangPayment } from './../piutang/entities/piutangPayment.entity';
+import { Stock } from './../stock/entities/stock.entity';
+import { OrderDetail } from './entities/orderDetail.entity';
+import { ProductService } from './../product/product.service';
+import { StockService } from './../stock/stock.service';
+import { Repository, DataSource } from 'typeorm';
+import { Order } from './entities/order.entity';
+import { CreateOrderDto, UpdateOrderDto } from './order.dto';
+import { IResponse, IPaginate } from 'src/interface/response.interface';
+import { Piutang } from 'src/piutang/entities/piutang.entity';
+import { PiutangService } from 'src/piutang/piutang.service';
+import { Kas } from 'src/accounting/entities/kas.entity';
+export declare class OrderService {
+    private readonly piutangService;
+    private readonly repository;
+    private readonly orderDetail;
+    private readonly stock;
+    private readonly product;
+    private readonly stockRepository;
+    private readonly piutang;
+    private readonly piutangPayment;
+    private readonly kas;
+    private readonly connection;
+    constructor(piutangService: PiutangService, repository: Repository<Order>, orderDetail: Repository<OrderDetail>, stock: StockService, product: ProductService, stockRepository: Repository<Stock>, piutang: Repository<Piutang>, piutangPayment: Repository<PiutangPayment>, kas: Repository<Kas>, connection: DataSource);
+    findAll(payload: FilterDto): Promise<IResponse | IPaginate>;
+    create(payload: CreateOrderDto): Promise<IResponse>;
+    findOne(id: string): Promise<IResponse>;
+    update(id: string, payload: UpdateOrderDto): Promise<IResponse>;
+    remove(id: string): Promise<IResponse>;
+    softDelete(id: string): Promise<IResponse>;
+    restoreSoftDelete(id: string): Promise<IResponse>;
+}
