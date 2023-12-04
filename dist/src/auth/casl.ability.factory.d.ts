@@ -6,8 +6,8 @@ export declare enum PermissionAction {
     UPDATE = "update",
     DELETE = "delete"
 }
-export declare type PermissionObjectType = any;
-export declare type AppAbility = Ability<[PermissionAction, PermissionObjectType]>;
+export type PermissionObjectType = any;
+export type AppAbility = Ability<[PermissionAction, PermissionObjectType]>;
 export declare class CaslAbilityFactory {
     private authService;
     constructor(authService: AuthService);
